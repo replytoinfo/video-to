@@ -1,0 +1,874 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* NEOBRUTALISM COLOR PALETTE - Light Mode */
+    --background: 38 30% 96%;
+    --foreground: 20 10% 8%;
+
+    --card: 38 20% 99%;
+    --card-foreground: 20 10% 8%;
+
+    --popover: 38 20% 99%;
+    --popover-foreground: 20 10% 8%;
+
+    /* Warm Amber Primary */
+    --primary: 40 80% 52%;
+    --primary-foreground: 20 10% 8%;
+
+    /* Sage Secondary */
+    --secondary: 158 35% 82%;
+    --secondary-foreground: 20 10% 8%;
+
+    --muted: 38 15% 90%;
+    --muted-foreground: 20 8% 35%;
+
+    /* Coral Accent */
+    --accent: 350 75% 58%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Red Destructive */
+    --destructive: 0 80% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 20 10% 8%;
+    --input: 20 10% 8%;
+    --ring: 20 10% 8%;
+
+    --radius: 0px;
+
+    /* Neobrutalism specific */
+    --brutal-shadow: 4px 4px 0 hsl(20 10% 8%);
+    --brutal-shadow-sm: 2px 2px 0 hsl(20 10% 8%);
+    --brutal-shadow-lg: 6px 6px 0 hsl(20 10% 8%);
+    --brutal-shadow-hover: 6px 6px 0 hsl(20 10% 8%);
+    --brutal-border: 3px solid hsl(20 10% 8%);
+    --brutal-border-thin: 2px solid hsl(20 10% 8%);
+
+    /* Neobrutal Accent Colors */
+    --neo-amber: 40 80% 52%;
+    --neo-coral: 350 75% 58%;
+    --neo-teal: 185 65% 45%;
+    --neo-lime: 100 65% 42%;
+    --neo-orange: 20 80% 52%;
+    --neo-lavender: 270 50% 68%;
+    --neo-sky: 200 70% 52%;
+
+    --sidebar-background: 38 30% 96%;
+    --sidebar-foreground: 20 10% 8%;
+    --sidebar-primary: 20 10% 8%;
+    --sidebar-primary-foreground: 38 30% 96%;
+    --sidebar-accent: 40 80% 52%;
+    --sidebar-accent-foreground: 20 10% 8%;
+    --sidebar-border: 20 10% 8%;
+    --sidebar-ring: 20 10% 8%;
+
+    --video-header-bg: 40 80% 52%;
+    --video-header-text: 20 10% 8%;
+  }
+
+  .dark {
+    /* NEOBRUTALISM COLOR PALETTE - Dark Mode */
+    --background: 25 8% 9%;
+    --foreground: 38 25% 93%;
+
+    --card: 25 8% 13%;
+    --card-foreground: 38 25% 93%;
+
+    --popover: 25 8% 13%;
+    --popover-foreground: 38 25% 93%;
+
+    /* Warm Amber Primary */
+    --primary: 40 80% 52%;
+    --primary-foreground: 20 10% 8%;
+
+    /* Dark Sage Secondary */
+    --secondary: 158 25% 22%;
+    --secondary-foreground: 38 25% 93%;
+
+    --muted: 25 8% 20%;
+    --muted-foreground: 38 15% 70%;
+
+    /* Coral Accent */
+    --accent: 350 70% 60%;
+    --accent-foreground: 20 10% 8%;
+
+    /* Red Destructive */
+    --destructive: 0 75% 48%;
+    --destructive-foreground: 38 25% 93%;
+
+    --border: 38 25% 93%;
+    --input: 38 25% 93%;
+    --ring: 40 80% 52%;
+
+    --brutal-shadow: 4px 4px 0 hsl(38 25% 93%);
+    --brutal-shadow-sm: 2px 2px 0 hsl(38 25% 93%);
+    --brutal-shadow-lg: 6px 6px 0 hsl(38 25% 93%);
+    --brutal-shadow-hover: 6px 6px 0 hsl(40 80% 52%);
+    --brutal-border: 3px solid hsl(38 25% 93%);
+    --brutal-border-thin: 2px solid hsl(38 25% 93%);
+
+    --sidebar-background: 25 8% 9%;
+    --sidebar-foreground: 38 25% 93%;
+    --sidebar-primary: 40 80% 52%;
+    --sidebar-primary-foreground: 20 10% 8%;
+    --sidebar-accent: 350 70% 60%;
+    --sidebar-accent-foreground: 20 10% 8%;
+    --sidebar-border: 38 25% 93%;
+    --sidebar-ring: 40 80% 52%;
+
+    --video-header-bg: 25 8% 15%;
+    --video-header-text: 40 80% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: -0.01em;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: radial-gradient(hsl(var(--foreground) / 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Archivo Black', sans-serif;
+    @apply tracking-tight font-bold uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
+
+  h1 {
+    @apply mb-4 text-4xl sm:text-5xl lg:text-6xl;
+  }
+
+  h2 {
+    @apply text-2xl sm:text-3xl;
+  }
+
+  h3 {
+    @apply text-xl sm:text-2xl;
+  }
+
+  /* Body text - normal case for readability */
+  p {
+    @apply leading-relaxed;
+    margin-bottom: 0.5rem;
+    text-transform: none;
+  }
+
+  /* Labels keep uppercase for UI consistency */
+  label {
+    @apply font-semibold uppercase text-sm tracking-wide;
+  }
+}
+
+@layer components {
+  /* NEOBRUTALISM UTILITY CLASSES */
+  .brutal-box {
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+    @apply bg-card transition-[transform,box-shadow,background-color] duration-150;
+  }
+
+  .brutal-box:hover {
+    box-shadow: var(--brutal-shadow-lg);
+    transform: translate(-2px, -2px);
+  }
+
+  .brutal-box:active {
+    box-shadow: var(--brutal-shadow-sm);
+    transform: translate(2px, 2px);
+  }
+
+  .brutal-box-static {
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+    @apply bg-card;
+  }
+
+  .brutal-box-accent {
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+    @apply bg-primary transition-[transform,box-shadow,background-color] duration-150;
+  }
+
+  .brutal-box-pink {
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+    background: hsl(var(--neo-coral));
+    @apply transition-[transform,box-shadow,background-color] duration-150;
+  }
+
+  .brutal-box-blue {
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+    background: hsl(var(--neo-sky));
+    @apply transition-[transform,box-shadow,background-color] duration-150;
+  }
+
+  .brutal-box-lime {
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+    background: hsl(var(--neo-lime));
+    @apply transition-[transform,box-shadow,background-color] duration-150;
+  }
+
+  .brutal-underline {
+    position: relative;
+    display: inline-block;
+  }
+
+  .brutal-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: hsl(var(--accent));
+  }
+
+  /* Slider thumb neobrutalism style */
+  .slider-thumb {
+    @apply w-6 h-6 bg-primary;
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow-sm);
+  }
+
+  .setting-label {
+    @apply flex justify-between items-center mb-2 font-semibold text-sm;
+    text-transform: none;
+  }
+
+  .setting-value {
+    @apply text-xs font-bold px-3 py-1 bg-primary text-primary-foreground tracking-wide;
+    border: var(--brutal-border-thin);
+    text-transform: none;
+  }
+
+  .setting-group {
+    @apply space-y-2 mb-6;
+  }
+
+  .setting-header {
+    @apply flex justify-between items-center mb-3;
+  }
+
+  /* Updated video header styles - NEOBRUTALISM */
+  .video-header {
+    @apply bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between;
+    border: var(--brutal-border);
+    border-bottom: none;
+  }
+
+  .video-filename {
+    @apply text-primary-foreground font-bold uppercase tracking-wide;
+  }
+
+  /* Button classes - NEOBRUTALISM */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground px-6 py-3 font-bold uppercase tracking-wide;
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+    transition: all 0.15s ease;
+  }
+
+  .btn-primary:hover {
+    box-shadow: var(--brutal-shadow-lg);
+    transform: translate(-2px, -2px);
+  }
+
+  .btn-primary:active {
+    box-shadow: var(--brutal-shadow-sm);
+    transform: translate(2px, 2px);
+  }
+
+  .btn-primary:disabled {
+    @apply opacity-50 cursor-not-allowed;
+    transform: none;
+    box-shadow: var(--brutal-shadow);
+  }
+
+  .btn-info {
+    background: hsl(var(--neo-sky));
+    @apply text-black px-6 py-3 font-bold uppercase tracking-wide;
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+    transition: all 0.15s ease;
+  }
+
+  .btn-info:hover {
+    box-shadow: var(--brutal-shadow-lg);
+    transform: translate(-2px, -2px);
+  }
+
+  .btn-success {
+    background: hsl(var(--neo-lime));
+    @apply text-black px-6 py-3 font-bold uppercase tracking-wide;
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+    transition: all 0.15s ease;
+  }
+
+  .btn-success:hover {
+    box-shadow: var(--brutal-shadow-lg);
+    transform: translate(-2px, -2px);
+  }
+
+  .btn-danger {
+    @apply bg-destructive text-destructive-foreground px-6 py-3 font-bold uppercase tracking-wide;
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+    transition: all 0.15s ease;
+  }
+
+  .btn-danger:hover {
+    box-shadow: var(--brutal-shadow-lg);
+    transform: translate(-2px, -2px);
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground px-6 py-3 font-bold uppercase tracking-wide;
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+    transition: all 0.15s ease;
+  }
+
+  .btn-secondary:hover {
+    box-shadow: var(--brutal-shadow-lg);
+    transform: translate(-2px, -2px);
+  }
+
+  .btn-sm {
+    @apply text-sm px-3 py-2;
+  }
+
+  .btn-lg {
+    @apply text-lg px-8 py-4;
+  }
+
+  .btn-block {
+    @apply w-full;
+  }
+
+  .top-controls,
+  .bottom-controls {
+    @apply flex items-center justify-between;
+  }
+
+  .top-controls {
+    @apply mt-2;
+  }
+
+  .bottom-controls {
+    @apply mt-4;
+  }
+
+  .frames-count {
+    @apply text-sm font-bold uppercase;
+  }
+
+  /* Marquee animation for header */
+  @keyframes brutal-marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .brutal-marquee {
+    display: flex;
+    animation: brutal-marquee 20s linear infinite;
+  }
+
+  /* Glitch effect */
+  @keyframes brutal-glitch {
+    0%, 90%, 100% { transform: translate(0); }
+    92% { transform: translate(-2px, 2px); }
+    94% { transform: translate(2px, -2px); }
+    96% { transform: translate(-2px, -2px); }
+    98% { transform: translate(2px, 2px); }
+  }
+
+  .brutal-glitch:hover {
+    animation: brutal-glitch 0.3s ease-in-out;
+  }
+}
+
+#root {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+/* Remove HDR Converter Styles - NEOBRUTALISM */
+.remove-hdr-converter {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.hdr-info-panel {
+    background: hsl(var(--neo-lavender));
+    color: black;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 30px;
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+}
+
+.hdr-info-panel h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.5em;
+    text-transform: uppercase;
+}
+
+.hdr-info-panel p {
+    margin: 5px 0 0 0;
+    font-size: 0.95em;
+}
+
+.drop-zone {
+    border: var(--brutal-border);
+    padding: 60px 20px;
+    text-align: center;
+    background: hsl(var(--neo-teal) / 0.2);
+    transition: all 0.15s ease;
+    margin-bottom: 30px;
+    box-shadow: var(--brutal-shadow);
+}
+
+.drop-zone:hover {
+    background: hsl(var(--neo-teal) / 0.4);
+    box-shadow: var(--brutal-shadow-lg);
+    transform: translate(-2px, -2px);
+}
+
+.upload-label {
+    cursor: pointer;
+    display: block;
+}
+
+.upload-icon {
+    font-size: 3em;
+    margin-bottom: 15px;
+}
+
+.upload-label h4 {
+    @apply text-foreground uppercase font-bold;
+    margin: 10px 0;
+    font-size: 1.2em;
+}
+
+.upload-label p {
+    @apply text-foreground;
+    margin: 5px 0;
+    font-size: 0.9em;
+}
+
+.selected-files {
+    background: hsl(var(--card));
+    padding: 20px;
+    margin-bottom: 30px;
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+}
+
+.files-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.files-header h4 {
+    margin: 0;
+    @apply text-foreground uppercase font-bold;
+}
+
+
+.files-list {
+    margin: 15px 0;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: hsl(var(--neo-lime) / 0.3);
+    margin-bottom: 10px;
+    border: var(--brutal-border-thin);
+}
+
+.file-name {
+    flex: 1;
+    font-weight: 600;
+    @apply text-foreground;
+}
+
+.file-size {
+    @apply text-foreground;
+    margin: 0 15px;
+    font-size: 0.9em;
+    font-weight: 700;
+}
+
+.progress-bar {
+    width: 100px;
+    height: 8px;
+    background: hsl(var(--muted));
+    margin: 0 15px;
+    overflow: hidden;
+    border: var(--brutal-border-thin);
+}
+
+.progress-fill {
+    height: 100%;
+    background: hsl(var(--primary));
+    transition: width 0.3s ease;
+}
+
+.processed-results {
+    background: hsl(var(--card));
+    padding: 20px;
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.results-header h4 {
+    margin: 0;
+    @apply text-foreground uppercase font-bold;
+}
+
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.result-item {
+    background: hsl(var(--muted));
+    overflow: hidden;
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow-sm);
+}
+
+.video-preview {
+    background: #000;
+}
+
+.result-info {
+    padding: 15px;
+}
+
+.original-name,
+.processed-name {
+    display: block;
+    font-size: 0.9em;
+    margin-bottom: 8px;
+    word-break: break-word;
+}
+
+.original-name {
+    @apply text-muted-foreground;
+}
+
+.processed-name {
+    @apply text-foreground font-bold uppercase;
+}
+
+.processing-method-selector {
+  background: hsl(var(--card));
+  padding: 20px;
+  margin: 20px 0;
+  border: var(--brutal-border);
+  box-shadow: var(--brutal-shadow);
+}
+
+.processing-method-selector h4 {
+  margin: 0 0 15px 0;
+  @apply text-foreground uppercase font-bold;
+  font-size: 1.1em;
+}
+
+.method-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px;
+  border: var(--brutal-border-thin);
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: hsl(var(--background));
+}
+
+.method-option:hover {
+  background: hsl(var(--neo-amber) / 0.3);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--brutal-shadow-sm);
+}
+
+.method-option input[type="radio"] {
+  margin: 0;
+  accent-color: hsl(var(--primary));
+  width: 20px;
+  height: 20px;
+}
+
+.method-option:has(input:checked) {
+  background: hsl(var(--primary));
+  box-shadow: var(--brutal-shadow);
+}
+
+.method-info {
+  flex: 1;
+}
+
+.method-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+  @apply text-foreground;
+}
+
+.method-description {
+  display: block;
+  font-size: 0.9em;
+  @apply text-muted-foreground;
+  line-height: 1.4;
+  text-transform: none;
+}
+
+.quality-warning {
+  background: hsl(var(--neo-orange));
+  color: black;
+  padding: 12px 16px;
+  margin: 15px 0;
+  font-weight: 600;
+  text-align: center;
+  border: var(--brutal-border);
+  box-shadow: var(--brutal-shadow-sm);
+}
+
+.method-stats {
+  display: flex;
+  gap: 15px;
+  margin-top: 8px;
+}
+
+.method-speed,
+.method-quality {
+  font-size: 0.8em;
+  padding: 4px 8px;
+  font-weight: 600;
+  border: var(--brutal-border-thin);
+}
+
+.method-speed {
+  background: hsl(var(--neo-sky));
+  color: black;
+}
+
+.method-quality {
+  background: hsl(var(--neo-coral));
+  color: black;
+}
+
+.quality-info {
+  background: hsl(var(--neo-lime));
+  color: black;
+  padding: 12px 16px;
+  margin: 15px 0;
+  font-weight: 600;
+  text-align: center;
+  border: var(--brutal-border);
+  box-shadow: var(--brutal-shadow-sm);
+}
+
+.quality-experimental {
+  background: hsl(var(--neo-lavender));
+  color: black;
+  padding: 12px 16px;
+  margin: 15px 0;
+  font-weight: 600;
+  text-align: center;
+  border: var(--brutal-border);
+  box-shadow: var(--brutal-shadow-sm);
+}
+
+/* Dark mode overrides handled by CSS variables */
+
+/* Video To JPG Styles - NEOBRUTALISM */
+.video-to-jpg {
+  @apply space-y-6;
+}
+.video-to-jpg .settings-section {
+  @apply p-4 text-black;
+  background: hsl(var(--neo-lavender));
+  border: var(--brutal-border);
+  box-shadow: var(--brutal-shadow);
+}
+.video-to-jpg .setting-group {
+  @apply mb-4;
+}
+.video-to-jpg .slider-labels {
+  @apply flex justify-between text-xs mt-1 font-bold uppercase;
+}
+.video-to-jpg .quality-note {
+  @apply text-xs mt-2 text-center font-bold uppercase;
+}
+.video-to-jpg .frames-grid {
+  @apply grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4;
+}
+.video-to-jpg .frame-card {
+  @apply bg-card overflow-hidden transform transition-[transform,box-shadow];
+  border: var(--brutal-border);
+  box-shadow: var(--brutal-shadow-sm);
+}
+.video-to-jpg .frame-card:hover {
+  box-shadow: var(--brutal-shadow);
+  transform: translate(-2px, -2px);
+}
+.video-to-jpg .frame-card img {
+  @apply w-full h-auto;
+}
+.video-to-jpg .frame-card button {
+  @apply w-full p-2 text-black font-bold uppercase;
+  background: hsl(var(--neo-coral));
+  border-top: var(--brutal-border);
+}
+.video-to-jpg .zip-btn {
+  @apply px-4 py-2 text-black font-bold uppercase;
+  background: hsl(var(--neo-lime));
+  border: var(--brutal-border);
+  box-shadow: var(--brutal-shadow);
+}
+.video-to-jpg .zip-btn.large {
+  @apply w-full py-3 text-lg mt-4;
+  background: hsl(var(--neo-sky));
+  border: var(--brutal-border);
+  box-shadow: var(--brutal-shadow);
+}
+
+/* Upload section - NEOBRUTALISM - natural flow layout */
+.upload-section {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+/* Upload block - fixed minimum spacing from menu buttons */
+.upload-block {
+  margin-top: 40px;
+}
+
+/* Ensure minimum spacing is maintained on all screen sizes */
+@media (max-width: 768px) {
+  .upload-block {
+    margin-top: 40px;
+  }
+}
+
+@media (max-width: 600px) {
+  .upload-block {
+    margin-top: 40px;
+  }
+}
+
+/* Custom scrollbar - NEOBRUTALISM */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border: var(--brutal-border-thin);
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border: var(--brutal-border-thin);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--accent));
+}
+
+/* Selection color */
+::selection {
+  background: hsl(var(--accent));
+  color: black;
+}
+
+/* Focus states - NEOBRUTALISM */
+*:focus-visible {
+  outline: 4px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* Loading animation - NEOBRUTALISM */
+@keyframes brutal-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: var(--brutal-shadow);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: var(--brutal-shadow-lg);
+  }
+}
+
+.brutal-loading {
+  animation: brutal-pulse 1s ease-in-out infinite;
+}
+
+/* Striped background utility */
+.brutal-stripes {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    hsl(var(--foreground) / 0.05) 10px,
+    hsl(var(--foreground) / 0.05) 20px
+  );
+}
+
+/* Checkered background utility */
+.brutal-checkered {
+  background-image:
+    linear-gradient(45deg, hsl(var(--foreground) / 0.05) 25%, transparent 25%),
+    linear-gradient(-45deg, hsl(var(--foreground) / 0.05) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, hsl(var(--foreground) / 0.05) 75%),
+    linear-gradient(-45deg, transparent 75%, hsl(var(--foreground) / 0.05) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}

@@ -1,0 +1,37 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    ignore:
+      # FFmpeg WASM: только v0.10.x, v0.11+ ломает сборку (CLAUDE.md)
+      - dependency-name: "@ffmpeg/ffmpeg"
+      - dependency-name: "@ffmpeg/core"
+      - dependency-name: "react-router-dom"
+      # ESLint v9 и Tailwind v4 — breaking changes, проект на v8/v3 (CLAUDE.md)
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]
+    groups:
+      production-minor-patch:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      production-major:
+        dependency-type: "production"
+        update-types:
+          - "major"
+      dev-deps:
+        dependency-type: "development"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns:
+          - "*"
