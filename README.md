@@ -35,7 +35,7 @@ npm install
 npm run build && npm run preview
 ```
 
-`npm run dev` currently fails with a `createFFmpeg` export error — FFmpeg 0.10.x is CommonJS and Vite's dev-mode ESM can't resolve its named exports. Use the preview build for local testing. See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
+`npm run dev` currently fails with a `createFFmpeg` export error - FFmpeg 0.10.x is CommonJS and Vite's dev-mode ESM can't resolve its named exports. Use the preview build for local testing. See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
 
 Conversion needs `SharedArrayBuffer`, which requires COOP/COEP headers — they're set in `netlify.toml` and `vercel.json`.
 
@@ -45,11 +45,11 @@ Chrome and Edge load WASM locally. Safari falls back to a CDN build because of b
 
 ## Docs
 
-- [CLAUDE.md](CLAUDE.md) — project context, constraints, architecture
-- [docs/PRODUCT.md](docs/PRODUCT.md) — audience and design principles
-- [docs/CHANGELOG.md](docs/CHANGELOG.md) — change history
-- [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) — known issues and fixes
+- [CLAUDE.md](CLAUDE.md) - project context, constraints, architecture for agents
+- [docs/PRODUCT.md](docs/PRODUCT.md) - audience and design principles
+- [docs/CHANGELOG.md](docs/CHANGELOG.md) - change history, maybe you'll find it useful
+- [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) - known issues and fixes
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT - see [LICENSE](LICENSE).
