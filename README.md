@@ -1,3 +1,5 @@
+**English** · [Русский](README.ru.md)
+
 # video-to
 
 Client-side video conversion in the browser. Files never leave your machine - everything runs locally through FFmpeg compiled to WebAssembly.
