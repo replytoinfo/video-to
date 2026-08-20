@@ -1,6 +1,6 @@
 # video-to
 
-Client-side video conversion in the browser. Files never leave your machine — everything runs locally through FFmpeg compiled to WebAssembly.
+Client-side video conversion in the browser. Files never leave your machine - everything runs locally through FFmpeg compiled to WebAssembly.
 
 Live: [video-to.pro](https://video-to.pro)
 
@@ -37,7 +37,7 @@ npm run build && npm run preview
 
 `npm run dev` currently fails with a `createFFmpeg` export error - FFmpeg 0.10.x is CommonJS and Vite's dev-mode ESM can't resolve its named exports. Use the preview build for local testing. See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
 
-Conversion needs `SharedArrayBuffer`, which requires COOP/COEP headers — they're set in `netlify.toml` and `vercel.json`.
+Conversion needs `SharedArrayBuffer`, which requires COOP/COEP headers - they're set in `netlify.toml` and `vercel.json`.
 
 ## Browser support
 

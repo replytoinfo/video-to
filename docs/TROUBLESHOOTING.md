@@ -64,13 +64,13 @@ manualChunks(id) {
 **Fix** (2026-06-18): VideoCutter uses original resolution + ultrafast + CRF 23:
 - `ultrafast` preset = minimal encoder buffers (key factor for WASM memory)
 - CRF 23 = standard quality, nearly indistinguishable from original
-- No downscaling — preserves original resolution
+- No downscaling - preserves original resolution
 - Works directly with HEVC input (no need to convert first)
 
 **Rejected approaches**:
 - Stream copy (`-c copy`): fast but produces black first frames (HEVC reference frame issue)
 - `preset faster` + CRF 18: exceeds WASM memory for files >100MB (too many reference frames + lookahead)
-- 720p downscale: unnecessary — the memory issue was from preset/CRF, not resolution
+- 720p downscale: unnecessary - the memory issue was from preset/CRF, not resolution
 - Duration fallback via FFmpeg `setProgress`: Chrome CAN read MP4 container metadata for HEVC, so this wasn't needed
 
 ## Netlify deploy fails with exit code 2
