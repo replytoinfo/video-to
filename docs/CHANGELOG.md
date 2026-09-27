@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-28 — react-router v7 migration + ESLint flat config
+
+### Security
+- react-router-dom 6.30.6 → react-router 7.18.4 (dropped the `-dom` package per official v7 guidance), closes remaining Dependabot alerts #1/#3 (deserializeErrors injection, open redirect) — 0 open alerts now
+- Removed the now-unused `ajv >=6.14.0 <7.0.0` override (was pinned for `@eslint/eslintrc` under old ESLint 8; absent from the dependency tree since the flat-config migration)
+
+### Tooling
+- Added `eslint.config.js` (flat config) for ESLint 10, fixed unused-vars and missing `cause` lint errors (see `fix(lint)` commit)
+
 ## 2026-09-28 — Dependabot Security Fixes
 
 ### Security

@@ -139,6 +139,6 @@ Neo accent colors: --neo-amber, --neo-coral, --neo-sky, --neo-lime,
 
 ## Security
 - Dependabot: configured (.github/dependabot.yml)
-- npm overrides: glob >=10.5.0, ajv >=6.14.0 <7, esbuild ^0.28.0, postcss-selector-parser ^6.1.3 (patched transitive deps)
+- npm overrides: glob >=10.5.0, esbuild ^0.28.0, postcss-selector-parser ^6.1.3 (patched transitive deps)
 - tailwindcss pinned to ^3.4.0 (project uses v3 syntax; ^4.x in package.json was a bug)
-- 2026-09-28: closed 4 of 6 open Dependabot alerts (react-router-dom, browserslist, baseline-browser-mapping, postcss-selector-parser). 2 alerts on `react-router` (#1, #3 — open redirect + deserializeErrors injection) remain open: patched only in react-router 7.18.0, which is a major upgrade from the current 6.x line used by react-router-dom — needs a deliberate v7 migration, not done here
+- 2026-09-28: closed all 6 open Dependabot alerts (react-router-dom → react-router 7.18.4 migration, browserslist, baseline-browser-mapping, postcss-selector-parser) — 0 open alerts
