@@ -5,9 +5,11 @@ import { fetchFile } from '@ffmpeg/ffmpeg'
 import { useFFmpeg } from '@/contexts/FFmpegContext'
 import { toast } from 'sonner'
 import { generateRandomFileName } from '@/utils/downloadUtils'
+import { useLanguage } from '@/contexts/LanguageContext'
 import JSZip from 'jszip'
 
 export default function VideoToJpgConverter(){
+  const { t } = useLanguage()
   const [videoFile,setVideoFile]=useState<File|null>(null)
   const [extractedFrames,setExtractedFrames]=useState<any[]>([])
   const [isProcessing,setIsProcessing]=useState(false)
@@ -23,11 +25,11 @@ export default function VideoToJpgConverter(){
     const file=files[0]
     if(!file) return
     if(!file.type.startsWith('video/')){
-      toast.error('Please select a valid video file (MP4, MOV, AVI, etc.)')
+      toast.error(t('vidToJpgInvalidFile'))
       return
     }
     if(file.size>1000*1024*1024){
-      toast.error('File too large. Please select a video smaller than 1000MB.')
+      toast.error(t('vidToJpgFileTooLarge'))
       return
     }
     setVideoFile(file)
@@ -86,7 +88,7 @@ export default function VideoToJpgConverter(){
     }catch(e:any){
       console.error('❌ Detailed error:',{message:e.message,name:e.name,stack:e.stack,videoFile:videoFile?.name,frameCount})
       const errorMsg=e.message||e.toString()||'Unknown FFmpeg error'
-      toast.error(`Extraction failed: ${errorMsg}. Please try a different video file or smaller frame count.`)
+      toast.error(`${t('vidToJpgExtractionFailed')} ${errorMsg}. ${t('vidToJpgExtractionFailedHint')}`)
     }finally{
       clearInterval(progressTimer);
       setIsProcessing(false)
@@ -102,7 +104,7 @@ export default function VideoToJpgConverter(){
 
   const downloadAllAsZip=async()=>{
     if(extractedFrames.length===0){
-      toast.error('No frames to download')
+      toast.error(t('vidToJpgNoFrames'))
       return
     }
     
@@ -145,11 +147,11 @@ export default function VideoToJpgConverter(){
       // Clean up
       URL.revokeObjectURL(link.href)
       
-      toast.success(`Successfully created ZIP with ${extractedFrames.length} frames`)
-      
+      toast.success(`${t('vidToJpgZipCreated')} ${extractedFrames.length}`)
+
     } catch (error) {
       console.error('ZIP creation error:', error)
-      toast.error('Failed to create ZIP file')
+      toast.error(t('vidToJpgZipFailed'))
     } finally {
       setIsProcessing(false)
       setTimeout(() => setProgress(0), 1000)
@@ -164,29 +166,29 @@ export default function VideoToJpgConverter(){
 
   return(
     <div className="video-to-jpg space-y-6">
-      <h2 className="text-center">VIDEO TO JPG</h2>
+      <h2 className="text-center">{t('vidToJpgTitle')}</h2>
       <FileUploader onSelect={handleFileSelect} accept="video/*"/>
       {!isFFmpegLoaded&&(
         <div className="loading-section">
-          <p>🔄 Loading video processor...</p>
-          <p>This may take a few seconds on first load.</p>
+          <p>🔄 {t('vidToJpgLoadingProcessor')}</p>
+          <p>{t('vidToJpgLoadingHint')}</p>
         </div>
       )}
       {videoFile&&(
         <div className="settings-section rounded-xl">
-          <h3>Settings</h3>
+          <h3>{t('settings')}</h3>
           <div className="setting-group">
-            <label>Number of frames to extract: {frameCount}</label>
+            <label>{t('vidToJpgFrameCountLabel')}: {frameCount}</label>
             <input type="range" min="0" max={frameOptions.length-1} value={frameOptions.indexOf(frameCount)} onChange={e=>setFrameCount(frameOptions[parseInt(e.target.value)])} className="w-full"/>
             <div className="slider-labels"><span>5</span><span>500</span></div>
           </div>
-          <p className="quality-note">Quality: Always best (maximum quality)</p>
+          <p className="quality-note">{t('vidToJpgQualityNote')}</p>
         </div>
       )}
       {videoFile&&(
         <div className="space-y-4">
           <button onClick={extractFrames} disabled={isProcessing||!isFFmpegLoaded||!videoFile} className="w-full px-6 py-3 text-lg font-bold uppercase tracking-wide text-primary-foreground bg-primary border-[3px] border-foreground shadow-[4px_4px_0_hsl(var(--foreground))] hover:shadow-[6px_6px_0_hsl(var(--foreground))] hover:-translate-x-0.5 hover:-translate-y-0.5 active:shadow-[2px_2px_0_hsl(var(--foreground))] active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed transition-[transform,box-shadow,background-color] duration-150">
-            {!isFFmpegLoaded?'Loading processor...':isProcessing?`Processing... ${progress}%`:`Extract ${frameCount} Frames`}
+            {!isFFmpegLoaded?t('vidToJpgLoadingProcessor'):isProcessing?`${t('processing')} ${progress}%`:`${t('vidToJpgExtractButton')} ${frameCount}`}
           </button>
           {isProcessing&&<ProgressBar value={progress}/>}
         </div>
@@ -194,22 +196,22 @@ export default function VideoToJpgConverter(){
       {extractedFrames.length>0&&(
         <div className="results-section space-y-4">
           <div className="results-header flex justify-between items-center">
-            <h3>Extracted {extractedFrames.length} Frames</h3>
+            <h3>{t('vidToJpgExtractedHeading')} {extractedFrames.length}</h3>
             <button onClick={downloadAllAsZip} disabled={isProcessing} className="zip-btn">
-              {isProcessing ? `📦 Creating ZIP... ${progress}%` : '📦 Download All as ZIP'}
+              {isProcessing ? `📦 ${t('creatingZip')} ${progress}%` : `📦 ${t('downloadAllAsZip')}`}
             </button>
           </div>
           <div className="frames-grid">
             {extractedFrames.map((frame) => (
               <div key={frame.name} className="frame-card">
                 <img src={frame.url} alt={frame.name}/>
-                <button onClick={()=>downloadFrame(frame)}>Download</button>
+                <button onClick={()=>downloadFrame(frame)}>{t('download')}</button>
               </div>
             ))}
           </div>
           <div className="bottom-zip-section">
             <button onClick={downloadAllAsZip} disabled={isProcessing} className="zip-btn large">
-              {isProcessing ? `📦 Creating ZIP... ${progress}%` : `📦 Download All ${extractedFrames.length} Frames as ZIP`}
+              {isProcessing ? `📦 ${t('creatingZip')} ${progress}%` : `📦 ${t('downloadAllAsZip')} ${extractedFrames.length}`}
             </button>
             {isProcessing && <ProgressBar value={progress}/>}
           </div>

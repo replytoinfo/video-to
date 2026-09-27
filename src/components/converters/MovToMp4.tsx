@@ -6,8 +6,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import ProgressBar from '@/components/common/ProgressBar'
 import { Upload, FileVideo } from 'lucide-react'
 import { generateRandomFileName } from '@/utils/downloadUtils'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 const MovToMp4 = () => {
+  const { t } = useLanguage()
   const [isLoading, setIsLoading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
@@ -22,19 +24,19 @@ const MovToMp4 = () => {
     
     // Create a timeout to prevent infinite hanging
     const timeoutId = setTimeout(() => {
-      setError('Conversion timeout - file may be too complex or corrupted')
+      setError(t('movToMp4ErrorTimeout'))
       setIsLoading(false)
     }, 600000) // 10 minutes timeout for large HEVC files
-    
+
     try {
-      setLoadingStep('Initializing FFmpeg...')
+      setLoadingStep(t('movToMp4StepInit'))
       const ffmpeg = await createFFmpegInstance()
       setProgress(10)
-      
+
       // FFmpeg v0.10.x doesn't have .on() method, set progress manually
       setProgress(25)
-      
-      setLoadingStep('Processing file...')
+
+      setLoadingStep(t('movToMp4StepProcessingFile'))
       const ext = file.name.toLowerCase().endsWith('.mp4') ? 'mp4' : 'mov'
       const input = `input.${ext}`
       const output = 'output.mp4'
@@ -42,7 +44,7 @@ const MovToMp4 = () => {
       setProgress(50)
       ffmpeg.FS('writeFile', input, await fetchFile(file))
       
-      setLoadingStep('Converting video...')
+      setLoadingStep(t('movToMp4StepConverting'))
       setProgress(75)
       
       const isAlreadyMp4 = file.name.toLowerCase().endsWith('.mp4')
@@ -96,7 +98,7 @@ const MovToMp4 = () => {
         console.log('Re-encoding successful')
       }
       
-      setLoadingStep('Preparing download...')
+      setLoadingStep(t('movToMp4StepPreparing'))
       setProgress(90)
       const data = ffmpeg.FS('readFile', output)
       ffmpeg.FS('unlink', input)
@@ -108,27 +110,27 @@ const MovToMp4 = () => {
       a.download = generateRandomFileName('mp4')
       a.click()
       URL.revokeObjectURL(url)
-      setLoadingStep('Complete!')
-      
+      setLoadingStep(t('movToMp4StepComplete'))
+
       clearTimeout(timeoutId) // Clear timeout on success
     } catch (err: any) {
       console.error('Conversion error:', err)
       clearTimeout(timeoutId) // Clear timeout on error
-      
+
       // Provide more specific error messages
       if (err.message?.includes('hevc') || err.message?.includes('HEVC')) {
-        setError('HEVC/H.265 video conversion failed. This codec can be challenging to process.')
+        setError(t('movToMp4ErrorHevc'))
       } else if (err.message?.includes('timeout')) {
-        setError('Conversion timed out. Please try with a smaller file or different format.')
+        setError(t('movToMp4ErrorTimeoutRetry'))
       } else {
-        setError(`Conversion failed: ${err.message}`)
+        setError(`${t('movToMp4ErrorPrefix')} ${err.message}`)
       }
     } finally {
       setIsLoading(false)
       setProgress(0)
       setLoadingStep('')
     }
-  }, [])
+  }, [t])
 
   const handleDragOver = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -156,9 +158,9 @@ const MovToMp4 = () => {
     if (videoFile) {
       handleFileConversion(videoFile)
     } else {
-      setError('Please drop a MOV or MP4 file')
+      setError(t('movToMp4ErrorInvalidDrop'))
     }
-  }, [handleFileConversion])
+  }, [handleFileConversion, t])
 
   return (
     <div className="space-y-6 p-6">
@@ -166,10 +168,10 @@ const MovToMp4 = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileVideo className="h-5 w-5" />
-            MOV/HEVC to MP4 Converter
+            {t('movToMp4Title')}
           </CardTitle>
           <CardDescription>
-            Convert MOV and HEVC (H.265) files to compatible MP4 (H.264)
+            {t('movToMp4Description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -205,11 +207,11 @@ const MovToMp4 = () => {
                   <p className={`text-sm ${
                     isDragOver ? 'text-primary' : 'text-muted-foreground'
                   }`}>
-                    {isLoading 
-                      ? 'Processing...' 
-                      : isDragOver 
-                        ? 'Drop MOV file here' 
-                        : 'Click to select or drag and drop MOV file'
+                    {isLoading
+                      ? t('processing')
+                      : isDragOver
+                        ? t('movToMp4DropActive')
+                        : t('movToMp4DropDefault')
                     }
                   </p>
                 </div>

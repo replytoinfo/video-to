@@ -11,9 +11,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Image, Download, Package, Info } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
 // import * as exifr from 'exifr' // TODO: Re-enable for EXIF data processing
 
 export default function ImgToJpgConverter(){
+  const { t } = useLanguage()
   const [files,setFiles]=useState<File[]>([])
   const [converted,setConverted]=useState<{name:string; url:string; blob:Blob}[]>([])
   const [progress,setProgress]=useState<number[]>([])
@@ -58,7 +60,7 @@ export default function ImgToJpgConverter(){
             fileName: file.name
           })
           setProgress(pr=>{const arr=[...pr];arr[i]=80;return arr})
-          toast.success(`Successfully converted ${file.name}`)
+          toast.success(`${t('imgSuccessfullyConverted')} ${file.name}`)
         } catch (heicToError) {
           console.log('heic-to failed, trying heic2any fallback...', heicToError)
 
@@ -83,7 +85,7 @@ export default function ImgToJpgConverter(){
               fileName: file.name
             })
             setProgress(pr=>{const arr=[...pr];arr[i]=80;return arr})
-            toast.success(`Successfully converted ${file.name} using fallback`)
+            toast.success(`${t('imgSuccessfullyConverted')} ${file.name} (${t('imgFallback')})`)
           } catch (heic2anyError) {
             console.error('heic2any also failed:', heic2anyError)
 
@@ -95,7 +97,7 @@ export default function ImgToJpgConverter(){
               setProgress(pr=>{const arr=[...pr];arr[i]=60;return arr})
               blob = await toJpeg(img)
               setProgress(pr=>{const arr=[...pr];arr[i]=80;return arr})
-              toast.success(`Successfully converted ${file.name} using browser`)
+              toast.success(`${t('imgSuccessfullyConverted')} ${file.name} (${t('imgViaBrowser')})`)
             } catch (nativeError) {
               console.error('All HEIC conversion methods failed:', {
                 heicTo: heicToError,
@@ -104,7 +106,7 @@ export default function ImgToJpgConverter(){
               })
 
               // Show user-friendly error message with instructions
-              toast.error(`Cannot convert ${file.name}: HEIC not supported. Please use Windows Photos to export as JPG.`)
+              toast.error(`${file.name} ${t('imgHeicUnsupported')}`)
               throw new Error(`HEIC file ${file.name} uses a codec not supported. Try: 1) Open in Windows Photos and export as JPG, 2) Use desktop software, 3) Try a different browser.`, { cause: nativeError })
             }
           }
@@ -144,7 +146,7 @@ export default function ImgToJpgConverter(){
       console.log(`✅ Successfully converted ${file.name}`)
     } catch (error) {
       console.error('❌ Conversion failed for file:', file.name, error)
-      toast.error(`Conversion failed for ${file.name}`)
+      toast.error(`${t('imgConversionFailedFor')} ${file.name}`)
       setProgress(pr=>{const arr=[...pr];arr[i]=0;return arr})
     }
   }
@@ -219,10 +221,10 @@ export default function ImgToJpgConverter(){
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Image className="h-5 w-5" />
-            Image to JPG Converter
+            {t('imgToJpgTitle')}
           </CardTitle>
           <CardDescription>
-            Convert HEIC, PNG, JPG, and other image formats to optimized JPG with best quality
+            {t('imgToJpgDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -232,10 +234,9 @@ export default function ImgToJpgConverter(){
                 <div className="flex items-start gap-3">
                   <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                   <div className="text-sm text-blue-800">
-                    <p className="font-medium mb-1">Safari User Notice</p>
+                    <p className="font-medium mb-1">{t('safariNoticeTitle')}</p>
                     <p>
-                      {browserName} uses a special download method for ZIP files to ensure reliable downloads. 
-                      Large files may take a moment to process before downloading.
+                      {browserName} {t('safariNoticeText')}
                     </p>
                   </div>
                 </div>
@@ -253,12 +254,12 @@ export default function ImgToJpgConverter(){
             <div className="space-y-4">
               <div className="flex gap-2">
                 <Button onClick={convertAll} className="flex-1">
-                  Convert {files.length} image{files.length > 1 ? 's' : ''}
+                  {t('imgConvertButton').replace('{count}', String(files.length))}
                 </Button>
                 {converted.length > 1 && (
                   <Button onClick={downloadAll} variant="outline" className="flex-shrink-0">
                     <Package className="h-4 w-4 mr-2" />
-                    Download as ZIP
+                    {t('downloadAsZIP')}
                   </Button>
                 )}
               </div>
@@ -281,11 +282,11 @@ export default function ImgToJpgConverter(){
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Converted Images</CardTitle>
+                  <CardTitle className="text-lg">{t('convertedImages')}</CardTitle>
                   {converted.length > 1 && (
                     <Button onClick={downloadAll} variant="outline" size="sm">
                       <Package className="h-4 w-4 mr-2" />
-                      Download as ZIP
+                      {t('downloadAsZIP')}
                     </Button>
                   )}
                 </div>
@@ -296,7 +297,7 @@ export default function ImgToJpgConverter(){
                     <span className="truncate text-sm">{f.name}</span>
                     <Button onClick={()=>downloadFile(f.url,f.name)} size="sm">
                       <Download className="h-4 w-4 mr-2" />
-                      Download
+                      {t('download')}
                     </Button>
                   </div>
                 ))}

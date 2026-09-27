@@ -6,6 +6,7 @@ import ProgressBar from '@/components/common/ProgressBar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download, Trash2, Zap } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ProcessedVideo {
     original: File;
@@ -17,6 +18,7 @@ interface ProcessedVideo {
 }
 
 const RemoveHDRConverter = () => {
+    const { t } = useLanguage();
     const [selectedVideos, setSelectedVideos] = useState<File[]>([]);
     const [processedVideos, setProcessedVideos] = useState<ProcessedVideo[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -49,9 +51,9 @@ const RemoveHDRConverter = () => {
         if (videoFiles.length > 0) {
             setSelectedVideos(prev => [...prev, ...videoFiles]);
         } else {
-            toast.error('Please drop video files only');
+            toast.error(t('hdrDropVideosOnly'));
         }
-    }, []);
+    }, [t]);
 
     const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
@@ -198,7 +200,7 @@ const RemoveHDRConverter = () => {
                 
             } catch (error) {
                 console.error(`Failed to process ${video.name}:`, error);
-                toast.error(`Failed to process ${video.name}`);
+                toast.error(`${t('hdrFailedToProcess')} ${video.name}`);
                 // Continue with next file
             } finally {
                 // Cleanup FFmpeg files
@@ -219,15 +221,15 @@ const RemoveHDRConverter = () => {
         setCurrentProcessingFile('');
         
         if (results.length > 0) {
-            toast.success(`Successfully processed ${results.length} of ${selectedVideos.length} videos`);
+            toast.success(`${t('hdrSuccessfullyProcessed')} ${results.length} ${t('hdrOf')} ${selectedVideos.length}`);
         } else {
-            toast.error('Failed to process any videos');
+            toast.error(t('hdrFailedToProcessAny'));
         }
         
         setIsProcessing(false);
         setProcessingProgress(0);
         setCurrentProcessingFile('');
-    }, [selectedVideos, ffmpeg, isFFmpegLoaded]);
+    }, [selectedVideos, ffmpeg, isFFmpegLoaded, t]);
 
     const downloadVideo = useCallback((video: ProcessedVideo) => {
         const link = document.createElement('a');
@@ -256,13 +258,13 @@ const RemoveHDRConverter = () => {
             link.click();
             
             URL.revokeObjectURL(url);
-            toast.success('ZIP file downloaded successfully');
-            
+            toast.success(t('hdrZipDownloaded'));
+
         } catch (error) {
             console.error('ZIP download failed:', error);
-            toast.error('Failed to download ZIP file');
+            toast.error(t('hdrZipDownloadFailed'));
         }
-    }, [processedVideos]);
+    }, [processedVideos, t]);
 
     return (
         <div className="space-y-6 p-6">
@@ -270,10 +272,10 @@ const RemoveHDRConverter = () => {
             <div className="text-center">
                 <h2 className="text-2xl font-bold uppercase tracking-wide flex items-center justify-center gap-2">
                     <Zap className="h-6 w-6 text-primary" />
-                    Remove HDR from Videos
+                    {t('hdrTitle')}
                 </h2>
                 <p className="text-muted-foreground mt-2">
-                    Fix green/muddy colors from iPhone HDR videos
+                    {t('hdrSubtitle')}
                 </p>
             </div>
 
@@ -304,10 +306,10 @@ const RemoveHDRConverter = () => {
                     </div>
                     <div>
                         <h4 className="text-lg font-bold uppercase">
-                            Drop videos here or click to browse
+                            {t('hdrDropHere')}
                         </h4>
                         <p className="text-muted-foreground">
-                            Select multiple videos at once
+                            {t('hdrSelectMultiple')}
                         </p>
                     </div>
                 </div>
@@ -317,10 +319,10 @@ const RemoveHDRConverter = () => {
                 <Card>
                     <CardHeader>
                         <div className="flex items-center justify-between">
-                            <CardTitle>Selected Videos ({selectedVideos.length})</CardTitle>
+                            <CardTitle>{t('hdrSelectedVideos')} ({selectedVideos.length})</CardTitle>
                             <Button variant="destructive" size="sm" onClick={clearAllFiles}>
                                 <Trash2 className="h-4 w-4 mr-2" />
-                                Clear All
+                                {t('hdrClearAll')}
                             </Button>
                         </div>
                     </CardHeader>
@@ -348,7 +350,7 @@ const RemoveHDRConverter = () => {
                         {isProcessing && (
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between text-sm">
-                                    <span>Processing: {currentProcessingFile}</span>
+                                    <span>{t('hdrProcessingFile')}: {currentProcessingFile}</span>
                                     <span>{Math.round(processingProgress)}%</span>
                                 </div>
                                 <ProgressBar value={processingProgress} />
@@ -362,11 +364,11 @@ const RemoveHDRConverter = () => {
                             size="lg"
                         >
                             {!isFFmpegLoaded ? (
-                                'Loading video processor...'
+                                t('hdrLoadingProcessor')
                             ) : isProcessing ? (
-                                'Processing videos...'
+                                t('hdrProcessingVideos')
                             ) : (
-                                `Remove HDR from ${selectedVideos.length} video(s)`
+                                `${t('hdrRemoveFrom')} ${selectedVideos.length}`
                             )}
                         </Button>
                     </CardContent>
@@ -377,10 +379,10 @@ const RemoveHDRConverter = () => {
                 <Card>
                     <CardHeader>
                         <div className="flex items-center justify-between">
-                            <CardTitle>Processed Videos ({processedVideos.length})</CardTitle>
+                            <CardTitle>{t('hdrProcessedVideos')} ({processedVideos.length})</CardTitle>
                             <Button onClick={downloadAllAsZip}>
                                 <Download className="h-4 w-4 mr-2" />
-                                Download All as ZIP
+                                {t('downloadAllAsZip')}
                             </Button>
                         </div>
                     </CardHeader>
@@ -394,22 +396,22 @@ const RemoveHDRConverter = () => {
                                 />
                                 <div className="flex-1 space-y-1">
                                     <div className="text-sm">
-                                        <strong>Original:</strong> {video.original.name}
+                                        <strong>{t('hdrOriginal')}:</strong> {video.original.name}
                                     </div>
                                     <div className="text-sm">
-                                        <strong>Processed:</strong> {video.fileName}
+                                        <strong>{t('hdrProcessed')}:</strong> {video.fileName}
                                     </div>
                                     <div className="text-sm text-muted-foreground">
-                                        <div>Original: {(video.originalSize / (1024 * 1024)).toFixed(1)} MB</div>
-                                        <div>Processed: {(video.processedSize / (1024 * 1024)).toFixed(1)} MB</div>
+                                        <div>{t('hdrOriginal')}: {(video.originalSize / (1024 * 1024)).toFixed(1)} MB</div>
+                                        <div>{t('hdrProcessed')}: {(video.processedSize / (1024 * 1024)).toFixed(1)} MB</div>
                                         <div>
-                                            Compression: {((1 - video.processedSize / video.originalSize) * 100).toFixed(1)}%
+                                            {t('hdrCompression')}: {((1 - video.processedSize / video.originalSize) * 100).toFixed(1)}%
                                         </div>
                                     </div>
                                 </div>
                                 <Button onClick={() => downloadVideo(video)}>
                                     <Download className="h-4 w-4 mr-2" />
-                                    Download
+                                    {t('download')}
                                 </Button>
                             </div>
                         ))}
