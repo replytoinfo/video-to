@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-28 — Dependabot Security Fixes
+
+### Security
+- react-router-dom 6.30.4 → 6.30.6 (open redirect leading to XSS, GHSA-jjmj-jmhj-qwj2), pulls react-router 6.30.4 → 6.30.6 transitively
+- browserslist 4.28.2 → 4.29.1, baseline-browser-mapping 2.10.29 → 2.11.26 (DoS on invalid input)
+- postcss-selector-parser deduped to 6.1.4 across all consumers (DoS) via new override `postcss-selector-parser: ^6.1.3`
+- react-router alerts #1/#3 (arbitrary constructor injection via `deserializeErrors()`, open redirect via backslash) remain open — the fix ships only in react-router 7.18.0, a major upgrade from the 6.x line react-router-dom currently uses; not applied here, needs a deliberate v7 migration decision
+
 ## 2026-05-04 — Design Facelift + Vite 8
 
 ### Palette & Visual
