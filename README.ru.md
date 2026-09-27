@@ -39,7 +39,7 @@ npm run build && npm run preview
 
 `npm run dev` сейчас падает с ошибкой экспорта `createFFmpeg` - FFmpeg 0.10.x собран как CommonJS, а dev-режим Vite работает через нативный ESM и не может разрешить именованные экспорты. Для локальной проверки используй preview-сборку. Подробности в [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
 
-Конвертация требует `SharedArrayBuffer`, а он - заголовков COOP/COEP. Они заданы в `netlify.toml` и `vercel.json`.
+Конвертация требует `SharedArrayBuffer`, а он - заголовков COOP/COEP. Они заданы в `netlify.toml`.
 
 ## Поддержка браузеров
 

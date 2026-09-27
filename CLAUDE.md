@@ -40,9 +40,9 @@ npm run preview # Preview production build
 - **FFmpeg**: Only v0.10.x! v0.11+ breaks WASM
 
 ### ESLint
-- Actually installed: **v10** (flat config only, `.eslintrc.json` is legacy/unused since v9+ dropped it) — see `eslint.config.js`
+- Actually installed: **v10** (flat config only). See `eslint.config.js`
 - `@typescript-eslint/no-unused-vars` ignores `_`-prefixed names (codebase convention for intentionally unused catch/args)
-- `react-hooks/set-state-in-effect` and `react-hooks/purity` (new in react-hooks v7 recommended-latest) downgraded to warn — real hits are FFmpeg-loading/tab-visibility effects and render-time `Date.now()`/`Math.random()`; fixing needs an effect-timing refactor, not a lint-config change
+- `react-hooks/set-state-in-effect` and `react-hooks/purity` (new in react-hooks v7 recommended-latest) downgraded to warn: real hits are FFmpeg-loading/tab-visibility effects and render-time `Date.now()`/`Math.random()`; fixing needs an effect-timing refactor, not a lint-config change
 
 ### DO NOT MODIFY (without understanding why)
 - `vite.config.ts` - manualChunks must be function (Rolldown), external function critical
@@ -141,4 +141,4 @@ Neo accent colors: --neo-amber, --neo-coral, --neo-sky, --neo-lime,
 - Dependabot: configured (.github/dependabot.yml)
 - npm overrides: glob >=10.5.0, esbuild ^0.28.0, postcss-selector-parser ^6.1.3 (patched transitive deps)
 - tailwindcss pinned to ^3.4.0 (project uses v3 syntax; ^4.x in package.json was a bug)
-- 2026-09-28: closed all 6 open Dependabot alerts (react-router-dom → react-router 7.18.4 migration, browserslist, baseline-browser-mapping, postcss-selector-parser) — 0 open alerts
+- 2026-09-28: closed all 6 open Dependabot alerts (react-router-dom → react-router 7.18.4 migration, browserslist, baseline-browser-mapping, postcss-selector-parser). 0 open alerts
