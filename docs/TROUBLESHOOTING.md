@@ -35,7 +35,13 @@ manualChunks(id) {
 
 **Cause**: Safari/WebKit has blob URL restrictions for WASM.
 
-**Fix**: `ffmpegUtils.ts` detects WebKit and falls back to CDN (unpkg.com). Do not remove browser detection.
+**Fix**: `ffmpegUtils.ts` detects WebKit (`isSafariBrowser()` from `browserUtils.ts`) and always uses the CDN core (unpkg.com) for it, skipping the local path entirely. Do not remove browser detection.
+
+## Chrome/Edge/Firefox also loading FFmpeg from unpkg instead of local files
+
+**Cause**: `ffmpegUtils.ts` used to hardcode the CDN `corePath` for every browser ("Простая стратегия для dev режима"), even though `public/ffmpeg-core.{js,wasm,worker.js}` are copied into `dist/` by `vite-plugin-static-copy` and served locally in production.
+
+**Fix**: Non-Safari browsers now get `corePath: '/ffmpeg-core.js'`. If `ffmpeg.load()` with the local path throws, `createFFmpegInstance` logs a warning and retries once with a fresh `createFFmpeg` instance pointed at the CDN core. Only pass `corePath` — `wasmPath`/`workerPath` are ignored by the browser runtime in `@ffmpeg/ffmpeg@0.10.1` (`getCreateFFmpegCore.js` always derives them from `corePath` via string replace).
 
 ## ZIP download shows "Array buffer allocation failed"
 

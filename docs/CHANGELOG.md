@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-28 — FFmpeg: load local core instead of always CDN
+
+### Fix
+- `ffmpegUtils.ts` hardcoded the unpkg.com CDN `corePath` for every browser, even though `public/ffmpeg-core.{js,wasm,worker.js}` (byte-identical to `@ffmpeg/core@0.10.0` on unpkg) are copied into `dist/` by `vite-plugin-static-copy` and served locally with 200 in production
+- Now: Safari/WebKit (`isSafariBrowser()`) → CDN always (blob URL restrictions); everyone else → local `/ffmpeg-core.js`, with one automatic retry against the CDN core if the local load throws
+- Dropped `wasmPath`/`workerPath` options — the browser runtime in `@ffmpeg/ffmpeg@0.10.1` ignores them and always derives both from `corePath` (`getCreateFFmpegCore.js`)
+
 ## 2026-09-28 — QA fixes: overlap, i18n, tsconfig
 
 ### UI

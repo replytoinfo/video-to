@@ -104,8 +104,8 @@ Neo accent colors: --neo-amber, --neo-coral, --neo-sky, --neo-lime,
 - Utility classes: `.brutal-box`, `.brutal-box-accent`, `.brutal-box-pink`, etc.
 
 ## Browser Compatibility
-- **Chrome/Edge**: Local WASM files
-- **Safari/WebKit**: CDN fallback (unpkg.com) due to blob errors
+- **Chrome/Edge/Firefox**: Local WASM files (`/ffmpeg-core.js` from `public/`), local fails → CDN fallback (one retry)
+- **Safari/WebKit**: Always CDN (unpkg.com) due to blob errors, never tries local
 - **SharedArrayBuffer**: Requires COOP/COEP headers
 - **iOS Safari**: `min-h-[100dvh]` for correct viewport height
 
