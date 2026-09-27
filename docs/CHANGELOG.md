@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-09-28 — QA fixes: overlap, i18n, tsconfig
+
+### UI
+- Footer: `fixed` → normal flow block (`py-4 flex justify-center`), moved inside the page's flex column so it sits at the bottom without covering content (`src/components/Footer.tsx`, `src/App.tsx`)
+- ThemeToggle/LanguageSwitcher wrapper: `fixed top-4 right-4` → `absolute` inside a `relative` page wrapper, no longer covers content on scroll; added `pt-16 sm:pt-0` to the header so the buttons don't overlap the `.PRO` logo on mobile (`src/App.tsx`, `src/components/video/VideoHeader.tsx`)
+- DOWNLOAD AS ZIP / DOWNLOAD ALL buttons in "Converted GIFs" now wrap (`flex-wrap`, `flex-1 sm:flex-none`, truncated labels) instead of overflowing the card on 390px (`src/components/video/DownloadOptions.tsx`)
+- Height input no longer receives the literal string `"Auto"` (invalid for `type="number"`) — empty value + `placeholder` instead (`src/components/ConversionSettings.tsx`)
+- Fixed pre-existing typo `t("downloadAsZip")` → `t("downloadAsZIP")` in `GifPreview.tsx` (wrong casing meant the key never resolved)
+
+### i18n
+- Added missing keys `videoCutter`, `processingComplete`, `settingsHelpText`, `qualityTooltip`, `fpsTooltip` (en/ru/uk)
+- Extracted and translated (en/ru/uk) all hardcoded strings in MOV→MP4, IMG→JPG, VID→JPG and NO HDR converters, and the 404 page — titles, buttons, drop zones, toasts, error messages
+- `document.documentElement.lang` now syncs with the selected language (`src/contexts/LanguageContext.tsx`)
+
+### Tooling
+- `tsconfig.app.json`: `target`/`lib` ES2020 → ES2022 — fixes 7 TS2554 errors on `new Error(msg, { cause })` (two-arg `Error` ctor lives in ES2022 lib); target browsers already require SharedArrayBuffer + COOP/COEP, so ES2022 support is a given
+
 ## 2026-09-28 — react-router v7 migration + ESLint flat config
 
 ### Security
