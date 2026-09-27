@@ -277,7 +277,8 @@ const ConversionSettings = ({ onSettingsChange }: ConversionSettingsProps) => {
               type="number"
               id="height"
               min={0}
-              value={settings.maintainAspectRatio ? t("auto") : settings.height}
+              value={settings.maintainAspectRatio ? "" : settings.height}
+              placeholder={settings.maintainAspectRatio ? t("auto") : undefined}
               onChange={handleHeightChange}
               className="h-10"
               disabled={settings.maintainAspectRatio}

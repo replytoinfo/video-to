@@ -3,8 +3,8 @@ import { ExternalLink } from "lucide-react";
 
 const Footer = () => {
   return (
-    <div className="fixed bottom-4 left-0 right-0 z-40 flex justify-center pointer-events-none">
-      <div className="inline-flex items-center gap-2 px-6 py-3 border-[3px] border-foreground shadow-[4px_4px_0_hsl(var(--foreground))] bg-card text-foreground font-bold text-sm uppercase tracking-wide pointer-events-auto">
+    <div className="py-4 flex justify-center">
+      <div className="inline-flex items-center gap-2 px-6 py-3 border-[3px] border-foreground shadow-[4px_4px_0_hsl(var(--foreground))] bg-card text-foreground font-bold text-sm uppercase tracking-wide">
         <span>Made by:</span>
         <a
           href="https://t.me/onlypleasurrr"

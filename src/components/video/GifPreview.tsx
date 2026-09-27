@@ -101,7 +101,7 @@ const GifPreview = ({
               disabled={isDownloading || isCreatingZip}
               className="flex-1"
             >
-              {isCreatingZip ? t("creatingZip") : t("downloadAsZip")}
+              {isCreatingZip ? t("creatingZip") : t("downloadAsZIP")}
             </Button>
           </div>
         )}

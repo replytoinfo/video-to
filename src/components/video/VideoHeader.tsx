@@ -40,7 +40,7 @@ const VideoHeader = ({ index, fileName, onRemove }: VideoHeaderProps) => {
 
   // For the main app header (when no file is selected) - NEOBRUTALISM STYLE
   return (
-    <div className="mb-6 text-center relative">
+    <div className="mb-6 text-center relative pt-16 sm:pt-0">
       {/* Main Title with brutal styling */}
       <div className="relative inline-block">
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-2 brutal-glitch">

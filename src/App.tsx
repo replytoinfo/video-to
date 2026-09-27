@@ -24,13 +24,13 @@ const App = () => {
         <Sonner />
         <LanguageProvider>
           <ThemeProvider>
-            <div className="flex justify-between items-center fixed top-4 right-4 z-50 gap-2">
-              <ThemeToggle />
-              <LanguageSwitcher />
-            </div>
             <FFmpegProvider>
               <BrowserRouter>
-                <div className="min-h-[100dvh] flex flex-col">
+                <div className="relative min-h-[100dvh] flex flex-col">
+                  <div className="flex justify-between items-center absolute top-4 right-4 z-50 gap-2">
+                    <ThemeToggle />
+                    <LanguageSwitcher />
+                  </div>
                   <div className="flex-1">
                     <Routes>
                       <Route path="/" element={<Index />} />
@@ -38,8 +38,8 @@ const App = () => {
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </div>
+                  <Footer />
                 </div>
-                <Footer />
               </BrowserRouter>
             </FFmpegProvider>
           </ThemeProvider>
