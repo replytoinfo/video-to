@@ -62,7 +62,7 @@ const MovToMp4 = () => {
           console.log('Stream copy successful')
         } catch (streamCopyError) {
           console.log('Stream copy failed, trying re-encoding...', streamCopyError)
-          try { ffmpeg.FS('unlink', output) } catch (_) {}
+          try { ffmpeg.FS('unlink', output) } catch (_) { /* file may not exist */ }
 
           await ffmpeg.run(
             '-i', input,

@@ -1,16 +1,10 @@
-import React, { useState, useMemo } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { Badge } from '@/components/ui/badge'
-import { Trash2, Download, FileVideo, AlertTriangle } from 'lucide-react'
+import React, { useState } from 'react'
+import { CardContent } from '@/components/ui/card'
+import { AlertTriangle } from 'lucide-react'
 import { useFFmpeg } from '@/contexts/FFmpegContext'
 import { GifSettings, convertVideoToGif } from '@/utils/videoToGif'
-import { downloadSingleGif, downloadAllGifs, downloadAsZip } from '@/utils/downloadUtils'
+import { downloadSingleGif, downloadAsZip } from '@/utils/downloadUtils'
 import { toast } from 'sonner'
-import GifPreview from '@/components/video/GifPreview'
-import ConversionSettings from '@/components/ConversionSettings'
-import ConversionButton from '@/components/ConversionButton'
 import { useLanguage } from '@/contexts/LanguageContext'
 import VideoPreview from '@/components/VideoPreview'
 // import { useIsMobile } from '@/hooks/use-mobile' // TODO: Add mobile support
@@ -49,8 +43,8 @@ const VideoItem = React.memo(({ videoFile, index, onRemove }: VideoItemProps) =>
   });
   
   const [convertedGifUrls, setConvertedGifUrls] = useState<string[] | null>(null);
-  const [isConverting, setIsConverting] = useState(false); // TODO: Use for UI state management
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [, setIsConverting] = useState(false); // TODO: Use for UI state management
+  const [isDownloading] = useState(false);
   const [isCreatingZip, setIsCreatingZip] = useState(false);
   const [gifSizes, setGifSizes] = useState<number[]>([]);
   const [hasLargeGifs, setHasLargeGifs] = useState(false);

@@ -317,7 +317,7 @@ export const downloadZip = async (files: {name:string; blob:Blob}[], name='archi
       saveAs(blob, name)
     } catch (fallbackError) {
       console.error('All download methods failed:', fallbackError)
-      throw new Error('Unable to download file in this browser')
+      throw new Error('Unable to download file in this browser', { cause: fallbackError })
     }
   }
 }

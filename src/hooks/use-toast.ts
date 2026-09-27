@@ -16,6 +16,8 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement
 }
 
+// Standard shadcn/ui boilerplate: object exists only to derive the ActionType union below.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const actionTypes = {
   ADD_TOAST: "ADD_TOAST",
   UPDATE_TOAST: "UPDATE_TOAST",

@@ -3,7 +3,7 @@ import { Download } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
-import { downloadSingleGif, downloadAllGifs, downloadAsZip } from "@/utils/downloadUtils";
+import { downloadSingleGif, downloadAsZip } from "@/utils/downloadUtils";
 import type { GifSettings } from "@/utils/videoToGif";
 
 interface GifPreviewProps {
@@ -16,18 +16,16 @@ interface GifPreviewProps {
   fileSize?: number;
 }
 
-const GifPreview = ({ 
-  url, 
-  index = 0, 
-  onDownload, 
-  gifUrls = [], 
-  videoFileName = "video",
-  settings = {},
-  fileSize = 0 
+const GifPreview = ({
+  url,
+  index = 0,
+  onDownload,
+  gifUrls = [],
+  fileSize = 0
 }: GifPreviewProps) => {
   const { t } = useLanguage();
   const isMobile = useIsMobile();
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [isDownloading] = useState(false);
   const [isCreatingZip, setIsCreatingZip] = useState(false);
   
   const formatFileSize = (bytes: number): string => {

@@ -32,7 +32,6 @@ const convertToMp4 = async (
     // Get file extension
     const fileExtension = videoFile.name.split('.').pop()?.toLowerCase() || '';
     const inputFileName = `input.${fileExtension}`;
-    const resizedFileName = "resized.mp4";
     const outputFileName = "converted.mp4";
     
     // Skip conversion for MP4 and MOV (try direct processing first)
@@ -155,7 +154,7 @@ const convertToMp4 = async (
             ffmpegError?.message?.includes('abort') ||
             ffmpegError?.toString().includes('OOM')) {
           toast.error("Недостаточно памяти для обработки этого видео. Попробуйте файл меньшего размера или закройте другие вкладки браузера.");
-          throw new Error("Out of memory during video processing");
+          throw new Error("Out of memory during video processing", { cause: ffmpegError });
         }
         
         throw ffmpegError;
@@ -171,7 +170,7 @@ const convertToMp4 = async (
       console.log('✅ Output MP4 file exists, size:', outputData.length, 'bytes');
     } catch (checkError) {
       console.error('❌ Output MP4 file not found:', checkError);
-      throw new Error('FFmpeg conversion completed but output file not found');
+      throw new Error('FFmpeg conversion completed but output file not found', { cause: checkError });
     }
     
     progress?.updateStep('convert', 80, `Cleaning up temporary files...`);

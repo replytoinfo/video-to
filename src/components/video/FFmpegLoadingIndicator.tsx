@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { Clock } from "lucide-react";
 
 interface FFmpegLoadingIndicatorProps {
@@ -12,7 +11,6 @@ interface FFmpegLoadingIndicatorProps {
 
 const FFmpegLoadingIndicator = ({ isLoading, progressValue = 75 }: FFmpegLoadingIndicatorProps) => {
   const { t } = useLanguage();
-  const isMobile = useIsMobile();
   const [timeRemaining, setTimeRemaining] = useState(15); // Start with 15 seconds countdown
   
   useEffect(() => {

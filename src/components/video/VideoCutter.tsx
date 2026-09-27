@@ -116,7 +116,6 @@ const VideoCutter = () => {
 	const getDurationViaFFmpeg = async (inputName: string): Promise<number> => {
 		if (!ffmpeg) return 0;
 		let duration = 0;
-		const prevLogger = ffmpeg.setLogger;
 		ffmpeg.setLogger(({ message }: { message: string }) => {
 			const match = message.match(/Duration:\s*(\d+):(\d+):(\d+)\.(\d+)/);
 			if (match) {
@@ -126,7 +125,7 @@ const VideoCutter = () => {
 		});
 		await ffmpeg.run("-i", inputName, "-t", "0.001", "-f", "mp4", "-y", "probe.mp4");
 		ffmpeg.setLogger(({ message }: { message: string }) => console.log(`[FFmpeg] ${message}`));
-		try { ffmpeg.FS("unlink", "probe.mp4"); } catch {}
+		try { ffmpeg.FS("unlink", "probe.mp4"); } catch { /* file may not exist */ }
 		return duration;
 	};
 

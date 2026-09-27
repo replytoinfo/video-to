@@ -35,7 +35,7 @@ export const FFmpegProvider: React.FC<FFmpegProviderProps> = ({ children }) => {
   const [isFFmpegLoading, setIsFFmpegLoading] = useState(false);
   const [ffmpegLoadingError, setFfmpegLoadingError] = useState<string | null>(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [isTabActive, setIsTabActive] = useState(true);
+  const [, setIsTabActive] = useState(true);
 
   // Мемоизированная функция загрузки FFmpeg
   const loadFFmpeg = useCallback(async () => {
@@ -142,7 +142,7 @@ export const FFmpegProvider: React.FC<FFmpegProviderProps> = ({ children }) => {
               // Simple test to see if FFmpeg is still responsive
               ffmpeg.FS('writeFile', 'test.txt', new Uint8Array([1]));
               ffmpeg.FS('unlink', 'test.txt');
-            } catch (error) {
+            } catch {
               // FFmpeg is broken, reload it
               console.warn('FFmpeg broke after tab switch, reloading...');
               setIsFFmpegLoaded(false);

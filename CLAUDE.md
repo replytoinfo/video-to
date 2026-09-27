@@ -38,7 +38,11 @@ npm run preview # Preview production build
 
 ### DO NOT UPDATE
 - **FFmpeg**: Only v0.10.x! v0.11+ breaks WASM
-- **ESLint**: v9 has breaking changes (ajv override keeps v6.14+ <7)
+
+### ESLint
+- Actually installed: **v10** (flat config only, `.eslintrc.json` is legacy/unused since v9+ dropped it) — see `eslint.config.js`
+- `@typescript-eslint/no-unused-vars` ignores `_`-prefixed names (codebase convention for intentionally unused catch/args)
+- `react-hooks/set-state-in-effect` and `react-hooks/purity` (new in react-hooks v7 recommended-latest) downgraded to warn — real hits are FFmpeg-loading/tab-visibility effects and render-time `Date.now()`/`Math.random()`; fixing needs an effect-timing refactor, not a lint-config change
 
 ### DO NOT MODIFY (without understanding why)
 - `vite.config.ts` - manualChunks must be function (Rolldown), external function critical

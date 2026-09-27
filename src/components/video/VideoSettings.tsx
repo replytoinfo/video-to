@@ -3,7 +3,6 @@ import ConversionSettings from "@/components/ConversionSettings";
 import ConversionButton from "@/components/ConversionButton";
 import { GifSettings } from "@/utils/videoToGif";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 
@@ -15,8 +14,7 @@ interface VideoSettingsProps {
 
 const VideoSettings = ({ onSettingsChange, onConvert, disabled }: VideoSettingsProps) => {
   const { t } = useLanguage();
-  const isMobile = useIsMobile();
-  
+
   return (
     <div className="space-y-4 sm:space-y-5 p-2 bg-secondary/40 rounded-lg">
       <div>

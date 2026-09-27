@@ -7,7 +7,6 @@ import { downloadZip } from '@/utils/zipManager'
 import { detectFormat } from '@/utils/formatDetector'
 import { imageQuality } from '@/utils/qualityPresets'
 import { isSafariBrowser, getBrowserName } from '@/utils/browserUtils'
-import { useFFmpeg } from '@/contexts/FFmpegContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -21,7 +20,6 @@ export default function ImgToJpgConverter(){
   
   const isSafari = isSafariBrowser()
   const browserName = getBrowserName()
-  const { ffmpeg, isFFmpegLoaded } = useFFmpeg()
 
   const handleSelect=(fs:File[])=>{ 
     setFiles(fs); 
@@ -107,7 +105,7 @@ export default function ImgToJpgConverter(){
 
               // Show user-friendly error message with instructions
               toast.error(`Cannot convert ${file.name}: HEIC not supported. Please use Windows Photos to export as JPG.`)
-              throw new Error(`HEIC file ${file.name} uses a codec not supported. Try: 1) Open in Windows Photos and export as JPG, 2) Use desktop software, 3) Try a different browser.`)
+              throw new Error(`HEIC file ${file.name} uses a codec not supported. Try: 1) Open in Windows Photos and export as JPG, 2) Use desktop software, 3) Try a different browser.`, { cause: nativeError })
             }
           }
         }
@@ -148,50 +146,6 @@ export default function ImgToJpgConverter(){
       console.error('❌ Conversion failed for file:', file.name, error)
       toast.error(`Conversion failed for ${file.name}`)
       setProgress(pr=>{const arr=[...pr];arr[i]=0;return arr})
-    }
-  }
-
-  const convertHEICWithFFmpeg = async (file: File): Promise<Blob> => {
-    if (!isFFmpegLoaded || !ffmpeg) {
-      throw new Error('FFmpeg not loaded')
-    }
-
-    const inputFileName = `input.${file.name.split('.').pop()?.toLowerCase()}`
-    const outputFileName = 'output.jpg'
-    
-    try {
-      // Write input file to FFmpeg filesystem
-      const inputData = new Uint8Array(await file.arrayBuffer())
-      ffmpeg.FS('writeFile', inputFileName, inputData)
-      
-      // Convert HEIC to JPG using FFmpeg
-      await ffmpeg.run(
-        '-i', inputFileName,
-        '-f', 'image2',
-        '-vcodec', 'mjpeg',
-        '-q:v', '2', // High quality
-        outputFileName
-      )
-      
-      // Read output file
-      const outputData = ffmpeg.FS('readFile', outputFileName)
-
-      // Cleanup files
-      ffmpeg.FS('unlink', inputFileName)
-      ffmpeg.FS('unlink', outputFileName)
-
-      // For FFmpeg v0.10.x, outputData is already Uint8Array - use it directly
-      return new Blob([outputData], { type: 'image/jpeg' })
-    } catch (error) {
-      // Cleanup on error
-      try {
-        ffmpeg.FS('unlink', inputFileName)
-        ffmpeg.FS('unlink', outputFileName)
-      } catch {
-        // Ignore cleanup errors
-      }
-      
-      throw error
     }
   }
 

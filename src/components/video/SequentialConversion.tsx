@@ -17,14 +17,12 @@ import {
   CardTitle,
   CardDescription
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface SequentialConversionProps {
   videoFiles: File[];
 }
 
 type SegmentDuration = "5" | "10" | "custom";
-type ConversionMode = "gif" | "video";
 
 const SequentialConversion = ({ videoFiles }: SequentialConversionProps) => {
   const { t } = useLanguage();
@@ -33,7 +31,6 @@ const SequentialConversion = ({ videoFiles }: SequentialConversionProps) => {
   const [customDuration, setCustomDuration] = useState(7);
   const [isConverting, setIsConverting] = useState(false);
   const [currentFileIndex, setCurrentFileIndex] = useState(-1);
-  const [conversionMode, setConversionMode] = useState<ConversionMode>("gif");
   const [convertedUrls, setConvertedUrls] = useState<string[]>([]);
   const [isCreatingZip, setIsCreatingZip] = useState(false);
   const progress = useProgress();

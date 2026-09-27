@@ -1,6 +1,5 @@
 import React, { useState, Suspense, lazy } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
 import VideoHeader from "@/components/video/VideoHeader";
 import VideoUploader from "@/components/VideoUploader";
 import VideoItem from "@/components/VideoItem";

@@ -120,7 +120,7 @@ const RemoveHDRConverter = () => {
                         console.log(`Processed blob created, size: ${processedBlob.size} bytes`);
                     } catch (readError) {
                         console.error('Failed to read output file:', readError);
-                        throw new Error('Output file not found or empty');
+                        throw new Error('Output file not found or empty', { cause: readError });
                     }
                 } catch (error) {
                     console.warn('Stream copy failed, trying re-encode:', error);
@@ -143,7 +143,7 @@ const RemoveHDRConverter = () => {
                         console.log(`Fallback output file ${outputName} created, size: ${outputData.length} bytes`);
                         
                         if (outputData.length === 0) {
-                            throw new Error('Fallback output file is empty');
+                            throw new Error('Fallback output file is empty', { cause: error });
                         }
                         
                         // Use outputData directly (not .buffer) for FFmpeg v0.10.x
@@ -172,7 +172,7 @@ const RemoveHDRConverter = () => {
                         console.log(`Compatibility mode output file ${outputName} created, size: ${outputData.length} bytes`);
                         
                         if (outputData.length === 0) {
-                            throw new Error('All fallback methods failed');
+                            throw new Error('All fallback methods failed', { cause: fallbackError });
                         }
                         
                         processedBlob = new Blob([outputData], { type: 'video/mp4' });
