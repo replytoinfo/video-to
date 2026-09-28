@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-28 — fix(i18n): корректное мн. число в ZIP toast'ах
+
+### Fix
+- `t(key, count)` теперь выбирает суффикс через `Intl.PluralRules` (en/ru/uk) вместо жёсткого `{count}`-replace — «из 1 файла», а не «из 1 файлов» — `downloadUtils.ts`, `LanguageContext.tsx`
+- Safari-фолбэк без ZIP (`zipManager.ts`): «Download 1 file» вместо «Download 1 Files»
+
 ## 2026-09-28 — i18n: toast notifications + UI polish, 404 dark theme
 
 ### i18n

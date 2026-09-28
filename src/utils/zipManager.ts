@@ -154,8 +154,9 @@ const downloadIndividualFiles = async (files: {name: string; blob: Blob}[]) => {
   title.style.color = '#333'
   container.appendChild(title)
   
+  const fileWord = files.length === 1 ? 'file' : 'files'
   const info = document.createElement('p')
-  info.textContent = `ZIP file is too large for Safari. Download ${files.length} files individually:`
+  info.textContent = `ZIP file is too large for Safari. Download ${files.length} ${fileWord} individually:`
   info.style.marginBottom = '15px'
   info.style.color = '#666'
   info.style.fontSize = '14px'
@@ -163,7 +164,7 @@ const downloadIndividualFiles = async (files: {name: string; blob: Blob}[]) => {
   
   // Download all button
   const downloadAllBtn = document.createElement('button')
-  downloadAllBtn.textContent = `Download All ${files.length} Files`
+  downloadAllBtn.textContent = `Download All ${files.length} ${files.length === 1 ? 'File' : 'Files'}`
   downloadAllBtn.style.width = '100%'
   downloadAllBtn.style.padding = '10px'
   downloadAllBtn.style.marginBottom = '15px'

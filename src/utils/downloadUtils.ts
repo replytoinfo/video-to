@@ -2,7 +2,7 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { toast } from "sonner";
 
-type Translate = (key: string) => string;
+type Translate = (key: string, count?: number) => string;
 const identityT: Translate = (key) => key;
 
 /**
@@ -202,7 +202,7 @@ export const downloadAsZip = async (
   }
 
   setIsCreatingZip(true);
-  toast.info(t('creatingZipArchiveWithFiles').replace('{count}', String(urls.length)));
+  toast.info(t('creatingZipArchiveWithFiles', urls.length));
 
   try {
     const zip = new JSZip();
@@ -251,7 +251,7 @@ export const downloadAsZip = async (
 
     saveAs(zipBlob, generateRandomFileName("zip", `${filePrefix}s-`));
 
-    toast.success(t('zipArchiveCreatedSuccess').replace('{count}', String(urls.length)).replace('{size}', (zipBlob.size / 1024 / 1024).toFixed(1)));
+    toast.success(t('zipArchiveCreatedSuccess', urls.length).replace('{size}', (zipBlob.size / 1024 / 1024).toFixed(1)));
 
   } catch (error) {
     console.error("Error creating ZIP file:", error);

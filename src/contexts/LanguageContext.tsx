@@ -6,8 +6,19 @@ export type Language = "en" | "ru" | "uk";
 interface LanguageContextType {
   language: Language;
   setLanguage: (language: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, count?: number) => string;
 }
+
+// CLDR plural category → suffix used on translation keys (e.g. "fooOne", "fooFew").
+// ru/uk resolve to one/few/many/other; en only ever resolves to one/other.
+const pluralSuffix = (language: Language, count: number): string => {
+  try {
+    const category = new Intl.PluralRules(language).select(count);
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  } catch {
+    return count === 1 ? "One" : "Other";
+  }
+};
 
 const translations = {
   en: {
@@ -325,12 +336,14 @@ const translations = {
     downloadDialogOpenedDescription: "A dialog with download links has been opened. Click each link to download.",
     noFilesAvailableToDownload: "No files available to download",
     tooManyFilesForZip: "Too many files for ZIP creation ({count}). Maximum: {max}. Using individual download instead.",
-    creatingZipArchiveWithFiles: "Creating ZIP archive with {count} files...",
+    creatingZipArchiveWithFilesOne: "Creating ZIP archive with {count} file...",
+    creatingZipArchiveWithFilesOther: "Creating ZIP archive with {count} files...",
     processingFileForZip: "Processing file {current} of {total} for ZIP...",
     zipArchiveTooLarge: "ZIP archive too large (>{max}MB). Using individual download instead.",
     failedToProcessFileSkipping: "Failed to process file {index}. Skipping...",
     generatingZipArchive: "Generating ZIP archive...",
-    zipArchiveCreatedSuccess: "ZIP archive with {count} files created successfully ({size}MB)",
+    zipArchiveCreatedSuccessOne: "ZIP archive with {count} file created successfully ({size}MB)",
+    zipArchiveCreatedSuccessOther: "ZIP archive with {count} files created successfully ({size}MB)",
     zipCreationFailedMemory: "ZIP creation failed due to memory constraints. Using individual download instead.",
     failedToCreateZipArchive: "Failed to create ZIP archive",
 
@@ -654,12 +667,14 @@ const translations = {
     downloadDialogOpenedDescription: "Открыто окно со ссылками для скачивания. Нажмите на каждую ссылку, чтобы скачать файл.",
     noFilesAvailableToDownload: "Нет доступных файлов для скачивания",
     tooManyFilesForZip: "Слишком много файлов для ZIP ({count}). Максимум: {max}. Будет использовано скачивание по отдельности.",
-    creatingZipArchiveWithFiles: "Создание ZIP-архива из {count} файлов...",
+    creatingZipArchiveWithFilesOne: "Создание ZIP-архива из {count} файла...",
+    creatingZipArchiveWithFilesOther: "Создание ZIP-архива из {count} файлов...",
     processingFileForZip: "Обработка файла {current} из {total} для ZIP...",
     zipArchiveTooLarge: "ZIP-архив слишком большой (>{max}МБ). Будет использовано скачивание по отдельности.",
     failedToProcessFileSkipping: "Не удалось обработать файл {index}. Пропуск...",
     generatingZipArchive: "Генерация ZIP-архива...",
-    zipArchiveCreatedSuccess: "ZIP-архив из {count} файлов успешно создан ({size}МБ)",
+    zipArchiveCreatedSuccessOne: "ZIP-архив из {count} файла успешно создан ({size}МБ)",
+    zipArchiveCreatedSuccessOther: "ZIP-архив из {count} файлов успешно создан ({size}МБ)",
     zipCreationFailedMemory: "Не удалось создать ZIP из-за нехватки памяти. Будет использовано скачивание по отдельности.",
     failedToCreateZipArchive: "Не удалось создать ZIP-архив",
 
@@ -983,12 +998,14 @@ const translations = {
     downloadDialogOpenedDescription: "Відкрито вікно з посиланнями для завантаження. Натисніть на кожне посилання, щоб завантажити файл.",
     noFilesAvailableToDownload: "Немає доступних файлів для завантаження",
     tooManyFilesForZip: "Забагато файлів для ZIP ({count}). Максимум: {max}. Буде використано завантаження окремо.",
-    creatingZipArchiveWithFiles: "Створення ZIP-архіву з {count} файлів...",
+    creatingZipArchiveWithFilesOne: "Створення ZIP-архіву з {count} файлу...",
+    creatingZipArchiveWithFilesOther: "Створення ZIP-архіву з {count} файлів...",
     processingFileForZip: "Обробка файлу {current} з {total} для ZIP...",
     zipArchiveTooLarge: "ZIP-архів завеликий (>{max}МБ). Буде використано завантаження окремо.",
     failedToProcessFileSkipping: "Не вдалося обробити файл {index}. Пропуск...",
     generatingZipArchive: "Генерація ZIP-архіву...",
-    zipArchiveCreatedSuccess: "ZIP-архів з {count} файлів успішно створено ({size}МБ)",
+    zipArchiveCreatedSuccessOne: "ZIP-архів з {count} файлу успішно створено ({size}МБ)",
+    zipArchiveCreatedSuccessOther: "ZIP-архів з {count} файлів успішно створено ({size}МБ)",
     zipCreationFailedMemory: "Не вдалося створити ZIP через нестачу пам'яті. Буде використано завантаження окремо.",
     failedToCreateZipArchive: "Не вдалося створити ZIP-архів",
 
@@ -1018,12 +1035,26 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     document.documentElement.lang = language;
   }, [language]);
 
-  const t = (key: string): string => {
-    if (!translations[language] || !translations[language][key]) {
-      console.warn(`Missing translation for key: ${key}`);
-      return translations.en[key] || key;
+  const t = (key: string, count?: number): string => {
+    let resolvedKey = key;
+    if (count !== undefined) {
+      const suffixed = `${key}${pluralSuffix(language, count)}`;
+      if (translations[language]?.[suffixed] !== undefined) {
+        resolvedKey = suffixed;
+      } else if (translations[language]?.[`${key}Other`] !== undefined) {
+        resolvedKey = `${key}Other`;
+      }
     }
-    return translations[language][key];
+
+    let result: string;
+    if (!translations[language] || !translations[language][resolvedKey]) {
+      console.warn(`Missing translation for key: ${resolvedKey}`);
+      result = translations.en[resolvedKey] || translations.en[key] || resolvedKey;
+    } else {
+      result = translations[language][resolvedKey];
+    }
+
+    return count !== undefined ? result.replace('{count}', String(count)) : result;
   };
 
   return (
