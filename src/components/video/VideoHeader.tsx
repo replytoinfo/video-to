@@ -15,7 +15,7 @@ const VideoHeader = ({ index, fileName, onRemove }: VideoHeaderProps) => {
   // Only show the simple header with filename when a file is provided
   if (fileName) {
     return (
-      <div className="flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground border-[3px] border-foreground border-b-0">
+      <div className="flex items-center justify-between px-4 py-3 pr-20 mt-20 bg-primary text-primary-foreground border-[3px] border-foreground border-b-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-accent border-[2px] border-foreground flex items-center justify-center">
             <FilmIcon className="h-4 w-4 text-accent-foreground" />
