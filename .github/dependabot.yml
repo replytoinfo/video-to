@@ -9,8 +9,7 @@ updates:
       # FFmpeg WASM: только v0.10.x, v0.11+ ломает сборку (CLAUDE.md)
       - dependency-name: "@ffmpeg/ffmpeg"
       - dependency-name: "@ffmpeg/core"
-      - dependency-name: "react-router-dom"
-      # ESLint v9 и Tailwind v4 — breaking changes, проект на v8/v3 (CLAUDE.md)
+      # мажоры ESLint и Tailwind v4 — breaking changes, проект на ESLint 10 (flat config) / Tailwind v3
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]
       - dependency-name: "tailwindcss"
