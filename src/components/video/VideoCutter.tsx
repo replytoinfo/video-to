@@ -144,13 +144,13 @@ const VideoCutter = () => {
 		try {
 			videoDuration = await getVideoDuration(file);
 		} catch {
-			toast.info("Reading video duration via FFmpeg...");
+			toast.info(t("readingDurationViaFfmpeg"));
 			videoDuration = await getDurationViaFFmpeg(inputName);
 		}
 		console.log(`[CUT] Duration: ${videoDuration}s`);
 
 		if (!isFinite(videoDuration) || videoDuration <= 0) {
-			toast.error("Cannot determine video duration");
+			toast.error(t("cannotDetermineDuration"));
 			ffmpeg.FS("unlink", inputName);
 			return [];
 		}
@@ -211,7 +211,7 @@ const VideoCutter = () => {
 			const outputFileName = `segment_${fileIndex}_${i}.mp4`;
 
 			console.log(`[CUT] Segment ${i + 1}/${segmentsToCreate.length}: start=${segment.start}, duration=${segment.duration}`);
-			toast.info(`Processing ${file.name}: segment ${i + 1}/${segmentsToCreate.length}`);
+			toast.info(t("processingSegmentToast").replace("{file}", file.name).replace("{current}", String(i + 1)).replace("{total}", String(segmentsToCreate.length)));
 
 			await ffmpeg.run(
 				"-ss", segment.start.toString(),
@@ -232,14 +232,14 @@ const VideoCutter = () => {
 			try {
 				data = ffmpeg.FS("readFile", outputFileName);
 			} catch {
-				toast.error(`Failed to process segment ${i + 1}. Try converting to H.264 first using MOV→MP4 tab.`);
+				toast.error(t("segmentProcessFailed").replace("{index}", String(i + 1)));
 				ffmpeg.FS("unlink", inputName);
 				return segments;
 			}
 
 			console.log(`[CUT] Segment ${i + 1} output: ${data.length} bytes`);
 			if (data.length === 0) {
-				toast.error("Video codec not supported for cutting. Convert to H.264 first using MOV→MP4 tab.");
+				toast.error(t("codecNotSupportedCutting"));
 				ffmpeg.FS("unlink", inputName);
 				return segments;
 			}
@@ -282,16 +282,16 @@ const VideoCutter = () => {
 			setProgress(0);
 
 			try {
-				toast.info(`Processing video ${i + 1}/${videoFiles.length}: ${file.name}`);
+				toast.info(t("processingVideoOfToast").replace("{current}", String(i + 1)).replace("{total}", String(videoFiles.length)).replace("{file}", file.name));
 
 				const segments = await cutVideoIntoSegments(file, i);
 				allSegments.push(...segments);
 				setProcessedSegments([...allSegments]);
 
-				toast.success(`${file.name}: created ${segments.length} segments`);
+				toast.success(t("createdSegmentsToast").replace("{file}", file.name).replace("{count}", String(segments.length)));
 			} catch (error) {
 				console.error(`Error cutting ${file.name}:`, error);
-				toast.error(`Error processing ${file.name}: ${error instanceof Error ? error.message : "Unknown error"}`);
+				toast.error(t("errorProcessingFile").replace("{file}", file.name).replace("{message}", error instanceof Error ? error.message : "Unknown error"));
 			}
 		}
 
@@ -300,14 +300,14 @@ const VideoCutter = () => {
 		setProgress(0);
 
 		toast.success(t("processingComplete"), {
-			description: `Created ${allSegments.length} segments from ${videoFiles.length} videos`,
+			description: t("createdSegmentsFromVideos").replace("{segCount}", String(allSegments.length)).replace("{videoCount}", String(videoFiles.length)),
 			duration: 5000
 		});
 	};
 
 	const handleDownloadAll = async () => {
 		if (processedSegments.length === 0) {
-			toast.error("No segments to download");
+			toast.error(t("noSegmentsToDownload"));
 			return;
 		}
 
@@ -321,7 +321,7 @@ const VideoCutter = () => {
 		link.download = generateRandomFileName("mp4", `${segment.videoName.replace(/\.[^/.]+$/, "")}-segment-${segment.segmentIndex + 1}-`);
 		link.click();
 
-		toast.success(`Downloading segment ${segment.segmentIndex + 1}`);
+		toast.success(t("downloadingSegmentToast").replace("{index}", String(segment.segmentIndex + 1)));
 	};
 
 	return (
@@ -335,7 +335,7 @@ const VideoCutter = () => {
 						{t("videoCutter")}
 					</CardTitle>
 					<CardDescription>
-						Upload multiple videos and cut them all into segments at once
+						{t("cutterDescription")}
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
@@ -346,7 +346,7 @@ const VideoCutter = () => {
 							<div className="rounded-lg border p-4 bg-secondary/20">
 								<h4 className="font-medium mb-3 flex items-center gap-2">
 									<FileVideo className="h-4 w-4" />
-									Uploaded Videos ({videoFiles.length})
+									{t("cutterUploadedVideos").replace("{count}", String(videoFiles.length))}
 								</h4>
 								<div className="space-y-2">
 									{videoFiles.map((file, index) => (
@@ -358,7 +358,7 @@ const VideoCutter = () => {
 												onClick={() => handleRemoveVideo(index)}
 												disabled={isConverting}
 											>
-												Remove
+												{t("remove")}
 											</Button>
 										</div>
 									))}
@@ -366,11 +366,11 @@ const VideoCutter = () => {
 							</div>
 
 							<div className="rounded-lg border p-4 space-y-4">
-								<h4 className="font-medium">Cutting Settings</h4>
+								<h4 className="font-medium">{t("cuttingSettings")}</h4>
 
 								<div className="space-y-4">
 									<div>
-										<Label className="mb-3 block">Cut Mode</Label>
+										<Label className="mb-3 block">{t("cutModeLabel")}</Label>
 										<RadioGroup
 											value={cutMode}
 											onValueChange={(value) => setCutMode(value as CutMode)}
@@ -379,13 +379,13 @@ const VideoCutter = () => {
 											<div className="flex items-center space-x-2">
 												<RadioGroupItem value="segments" id="mode-segments" />
 												<Label htmlFor="mode-segments" className="cursor-pointer">
-													By Number of Segments (equal parts)
+													{t("cutModeSegmentsLabel")}
 												</Label>
 											</div>
 											<div className="flex items-center space-x-2">
 												<RadioGroupItem value="duration" id="mode-duration" />
 												<Label htmlFor="mode-duration" className="cursor-pointer">
-													By Segment Duration (minimum time, short remainder added to last segment)
+													{t("cutModeDurationLabel")}
 												</Label>
 											</div>
 										</RadioGroup>
@@ -393,7 +393,7 @@ const VideoCutter = () => {
 
 									{cutMode === "segments" && (
 										<div>
-											<Label className="mb-3 block">Number of Segments</Label>
+											<Label className="mb-3 block">{t("numberOfSegmentsLabel")}</Label>
 											<RadioGroup
 												value={segmentCount}
 												onValueChange={setSegmentCount}
@@ -403,13 +403,13 @@ const VideoCutter = () => {
 													<div key={num} className="flex items-center space-x-2">
 														<RadioGroupItem value={num} id={`seg-${num}`} />
 														<Label htmlFor={`seg-${num}`} className="cursor-pointer">
-															{num} segments
+															{t("segmentsCountPrefix")} {num}
 														</Label>
 													</div>
 												))}
 												<div className="flex items-center space-x-2">
 													<RadioGroupItem value="custom" id="seg-custom" />
-													<Label htmlFor="seg-custom" className="cursor-pointer">Custom:</Label>
+													<Label htmlFor="seg-custom" className="cursor-pointer">{t("customLabel")}</Label>
 													<Input
 														type="number"
 														min={2}
@@ -419,7 +419,7 @@ const VideoCutter = () => {
 														disabled={segmentCount !== "custom"}
 														className="w-20"
 													/>
-													<span className="text-sm text-muted-foreground">segments</span>
+													<span className="text-sm text-muted-foreground">{t("segmentsWord")}</span>
 												</div>
 											</RadioGroup>
 										</div>
@@ -427,28 +427,23 @@ const VideoCutter = () => {
 
 									{cutMode === "duration" && (
 										<div>
-											<Label className="mb-3 block">Minimum Segment Duration</Label>
+											<Label className="mb-3 block">{t("minSegmentDuration")}</Label>
 											<RadioGroup
 												value={segmentDuration}
 												onValueChange={setSegmentDuration}
 												className="space-y-2"
 											>
-												{[
-													{ value: "5", label: "5 seconds" },
-													{ value: "10", label: "10 seconds" },
-													{ value: "15", label: "15 seconds" },
-													{ value: "30", label: "30 seconds" }
-												].map((option) => (
-													<div key={option.value} className="flex items-center space-x-2">
-														<RadioGroupItem value={option.value} id={`dur-${option.value}`} />
-														<Label htmlFor={`dur-${option.value}`} className="cursor-pointer">
-															{option.label}
+												{["5", "10", "15", "30"].map((value) => (
+													<div key={value} className="flex items-center space-x-2">
+														<RadioGroupItem value={value} id={`dur-${value}`} />
+														<Label htmlFor={`dur-${value}`} className="cursor-pointer">
+															{t("secondsCountPrefix")} {value}
 														</Label>
 													</div>
 												))}
 												<div className="flex items-center space-x-2">
 													<RadioGroupItem value="custom" id="dur-custom" />
-													<Label htmlFor="dur-custom" className="cursor-pointer">Custom:</Label>
+													<Label htmlFor="dur-custom" className="cursor-pointer">{t("customLabel")}</Label>
 													<Input
 														type="number"
 														min={1}
@@ -458,11 +453,11 @@ const VideoCutter = () => {
 														disabled={segmentDuration !== "custom"}
 														className="w-20"
 													/>
-													<span className="text-sm text-muted-foreground">seconds</span>
+													<span className="text-sm text-muted-foreground">{t("seconds")}</span>
 												</div>
 											</RadioGroup>
 											<p className="text-xs text-muted-foreground mt-2">
-												Note: If the remainder is shorter than the specified duration, it will be added to the last segment to avoid short clips.
+												{t("cutModeDurationNote")}
 											</p>
 										</div>
 									)}
@@ -483,7 +478,7 @@ const VideoCutter = () => {
 									) : (
 										<>
 											<PlayCircle className="h-4 w-4" />
-											Cut All Videos
+											{t("cutAllVideos")}
 										</>
 									)}
 								</Button>
@@ -498,12 +493,12 @@ const VideoCutter = () => {
 										{isCreatingZip ? (
 											<>
 												<div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-												Creating ZIP...
+												{t("creatingZip")}
 											</>
 										) : (
 											<>
 												<Download className="h-4 w-4" />
-												Download All as ZIP ({processedSegments.length})
+												{t("downloadAllAsZipCount").replace("{count}", String(processedSegments.length))}
 											</>
 										)}
 									</Button>
@@ -513,12 +508,12 @@ const VideoCutter = () => {
 							{isConverting && currentFileIndex >= 0 && (
 								<div className="space-y-2">
 									<div className="flex justify-between text-sm">
-										<span>Processing: {videoFiles[currentFileIndex]?.name}</span>
+										<span>{t("processingFilePrefix")} {videoFiles[currentFileIndex]?.name}</span>
 										<span>{progress}%</span>
 									</div>
 									<Progress value={progress} />
 									<p className="text-xs text-muted-foreground">
-										Video {currentFileIndex + 1} of {videoFiles.length}
+										{t("videoWord")} {currentFileIndex + 1} {t("hdrOf")} {videoFiles.length}
 									</p>
 								</div>
 							)}
@@ -529,7 +524,7 @@ const VideoCutter = () => {
 						<div className="rounded-lg border p-4 space-y-4">
 							<div className="flex justify-between items-center">
 								<h4 className="font-medium">
-									Processed Segments ({processedSegments.length})
+									{t("processedSegmentsCount").replace("{count}", String(processedSegments.length))}
 								</h4>
 								<Button
 									size="sm"
@@ -538,7 +533,7 @@ const VideoCutter = () => {
 									disabled={isCreatingZip}
 								>
 									<Download className="h-4 w-4 mr-2" />
-									Download All
+									{t("downloadAll")}
 								</Button>
 							</div>
 
@@ -553,7 +548,7 @@ const VideoCutter = () => {
 											/>
 										</div>
 										<div className="text-xs text-muted-foreground truncate">
-											{segment.videoName} - Segment {segment.segmentIndex + 1}
+											{segment.videoName} - {t("segment")} {segment.segmentIndex + 1}
 										</div>
 										<Button
 											size="sm"
@@ -562,7 +557,7 @@ const VideoCutter = () => {
 											onClick={() => handleDownloadSingle(segment)}
 										>
 											<Download className="h-3 w-3 mr-2" />
-											Download
+											{t("download")}
 										</Button>
 									</div>
 								))}

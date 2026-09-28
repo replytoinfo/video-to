@@ -109,7 +109,7 @@ const SequentialConversion = ({ videoFiles }: SequentialConversionProps) => {
       };
       
       // Convert the video to a GIF with progress tracking
-      const urls = await convertVideoToGif(file, settings, ffmpeg, progress);
+      const urls = await convertVideoToGif(file, settings, ffmpeg, progress, t);
       
       if (urls && urls.length > 0) {
         const newUrls = [...accumulatedUrls, ...urls];
@@ -285,7 +285,7 @@ const SequentialConversion = ({ videoFiles }: SequentialConversionProps) => {
         </div>
         
         <DetailedProgress
-          title="Sequential Conversion Progress"
+          title={t("sequentialConversionProgress")}
           steps={progress.steps}
           currentStep={progress.currentStep}
           overallProgress={progress.overallProgress}

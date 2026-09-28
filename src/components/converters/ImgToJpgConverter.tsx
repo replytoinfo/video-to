@@ -254,7 +254,7 @@ export default function ImgToJpgConverter(){
             <div className="space-y-4">
               <div className="flex gap-2">
                 <Button onClick={convertAll} className="flex-1">
-                  {t('imgConvertButton').replace('{count}', String(files.length))}
+                  {t(files.length === 1 ? 'imgConvertButtonSingular' : 'imgConvertButtonPlural').replace('{count}', String(files.length))}
                 </Button>
                 {converted.length > 1 && (
                   <Button onClick={downloadAll} variant="outline" className="flex-shrink-0">

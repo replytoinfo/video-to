@@ -20,11 +20,15 @@ export interface GifSettings {
 }
 
 
+type Translate = (key: string) => string;
+const identityT: Translate = (key) => key;
+
 // Helper function to convert any video format to MP4
 const convertToMp4 = async (
   videoFile: File,
   ffmpegInstance: any,
-  progress?: UseProgressReturn
+  progress?: UseProgressReturn,
+  t: Translate = identityT
 ): Promise<string> => {
   try {
     const { fetchFile } = await import("@ffmpeg/ffmpeg");
@@ -69,7 +73,7 @@ const convertToMp4 = async (
     
     // Информация о размере файла для логирования
     console.log(`📊 File size: ${(videoFile.size / (1024 * 1024)).toFixed(2)} MB`);
-    toast.info(`Preparing video (${fileExtension} → MP4)...`);
+    toast.info(t('preparingVideoFormat').replace('{ext}', fileExtension));
     
     progress?.updateStep('convert', 10, `Writing ${fileExtension} file to memory...`);
     
@@ -153,7 +157,7 @@ const convertToMp4 = async (
         if (ffmpegError?.message?.includes('OOM') || 
             ffmpegError?.message?.includes('abort') ||
             ffmpegError?.toString().includes('OOM')) {
-          toast.error("Недостаточно памяти для обработки этого видео. Попробуйте файл меньшего размера или закройте другие вкладки браузера.");
+          toast.error(t('outOfMemoryError'));
           throw new Error("Out of memory during video processing", { cause: ffmpegError });
         }
         
@@ -190,12 +194,12 @@ const convertToMp4 = async (
     progress?.updateStep('convert', 100, `MP4 conversion completed successfully`);
     
     console.log("Video successfully converted to MP4");
-    toast.success("Video prepared for GIF conversion");
+    toast.success(t('videoPreparedForGif'));
     
     return outputFileName;
   } catch (error) {
     console.error("Error converting to MP4:", error);
-    toast.error("Failed to prepare video for conversion");
+    toast.error(t('failedToPrepareVideo'));
     throw error;
   }
 };
@@ -204,7 +208,8 @@ export const convertVideoToGif = async (
   videoFile: File,
   settings: GifSettings,
   ffmpegInstance: any,
-  progress?: UseProgressReturn
+  progress?: UseProgressReturn,
+  t: Translate = identityT
 ): Promise<string[] | null> => {
   try {
     console.log('🚀 === STARTING VIDEO TO GIF CONVERSION ===');
@@ -215,7 +220,7 @@ export const convertVideoToGif = async (
     // Check if ffmpeg instance is provided
     if (!ffmpegInstance) {
       console.error("❌ FFmpeg instance is not available");
-      toast.error("FFmpeg is not available. Please reload the page and try again.");
+      toast.error(t('ffmpegNotAvailableRetry'));
       return null;
     }
     
@@ -225,12 +230,12 @@ export const convertVideoToGif = async (
     const WARN_VIDEO_SIZE_MB = 500;
     
     if (videoSizeMB > MAX_VIDEO_SIZE_MB) {
-      toast.error(`Video файл слишком большой (${videoSizeMB.toFixed(1)}MB). Максимальный размер: ${MAX_VIDEO_SIZE_MB}MB. Попробуйте сжать видео.`);
+      toast.error(t('videoFileTooLarge').replace('{size}', videoSizeMB.toFixed(1)).replace('{max}', String(MAX_VIDEO_SIZE_MB)));
       return null;
     }
-    
+
     if (videoSizeMB > WARN_VIDEO_SIZE_MB) {
-      toast.info(`Большой файл (${videoSizeMB.toFixed(1)}MB). Обработка может занять несколько минут.`, {
+      toast.info(t('largeFileWarning').replace('{size}', videoSizeMB.toFixed(1)), {
         duration: 5000
       });
     }
@@ -245,7 +250,7 @@ export const convertVideoToGif = async (
     const { fetchFile } = await import("@ffmpeg/ffmpeg");
     
     try {
-      toast.info("Processing video...");
+      toast.info(t('processingVideoStarted'));
       console.log("Starting video processing pipeline...");
       
       progress?.show();
@@ -266,10 +271,10 @@ export const convertVideoToGif = async (
         progress?.startStep('convert', `Converting ${fileExtension} to MP4...`);
         console.log(`🔄 Input format is ${fileExtension}, converting to MP4 first...`);
         console.log('⏳ About to call convertToMp4 function...');
-        mp4FileName = await convertToMp4(videoFile, ffmpegInstance, progress);
+        mp4FileName = await convertToMp4(videoFile, ffmpegInstance, progress, t);
         console.log(`✅ Conversion complete. MP4 file available as: ${mp4FileName}`);
         progress?.completeStep('convert', 'MP4 conversion completed');
-        toast.info("Now processing converted MP4...");
+        toast.info(t('nowProcessingMp4'));
       } else {
         progress?.updateStep('prepare', 50, 'Input is already MP4, writing to memory...');
         console.log("📝 Input is already MP4, writing directly to FFmpeg FS...");
@@ -378,15 +383,15 @@ export const convertVideoToGif = async (
         
         if (rawEstimatedSegments > maxSegments) {
           const browserName = isSafariBrowser() ? 'Safari' : 'this browser';
-          toast.error(`Слишком много сегментов (${rawEstimatedSegments}). Максимум для ${browserName}: ${maxSegments}. Увеличьте длительность сегмента.`);
+          toast.error(t('tooManySegments').replace('{count}', String(rawEstimatedSegments)).replace('{browser}', browserName).replace('{max}', String(maxSegments)));
           return null;
         }
-        
+
         // Warning for many segments (Safari-specific)
         const warningThreshold = isSafariBrowser() ? 20 : 50;
         if (estimatedSegments > warningThreshold) {
           const browserName = isSafariBrowser() ? 'Safari' : 'this browser';
-          toast.info(`Большое количество сегментов (${estimatedSegments}) в ${browserName}. Это может занять много времени.`, {
+          toast.info(t('manySegmentsWarning').replace('{count}', String(estimatedSegments)).replace('{browser}', browserName), {
             duration: 5000
           });
         }
@@ -396,7 +401,7 @@ export const convertVideoToGif = async (
         
         // Show progress to user
         progress?.updateStep('segments', 10, `Creating ${estimatedSegments} segments of ${segmentDuration} seconds each...`);
-        toast.info(`Creating ${estimatedSegments} segments of ${segmentDuration} seconds each from MP4...`);
+        toast.info(t('creatingSegmentsFromMp4').replace('{count}', String(estimatedSegments)).replace('{duration}', String(segmentDuration)));
         
         // Process each segment sequentially with Safari optimizations
         const filesToCleanup: string[] = [];
@@ -421,7 +426,7 @@ export const convertVideoToGif = async (
           const segmentProgress = 20 + (i / estimatedSegments) * 70; // 20% to 90%
           progress?.updateStep('segments', segmentProgress, `Processing segment ${i+1}/${estimatedSegments} (${startTime.toFixed(1)}s-${(startTime+actualDuration).toFixed(1)}s)`);
           
-          toast.info(`Processing MP4 segment ${i+1} of ${estimatedSegments}...`, {
+          toast.info(t('processingMp4Segment').replace('{current}', String(i + 1)).replace('{total}', String(estimatedSegments)), {
             id: "segment-progress"
           });
           
@@ -483,7 +488,7 @@ export const convertVideoToGif = async (
               console.error(`Error processing MP4 segment ${i+1} (attempt ${retryCount}):`, segmentError);
               
               if (retryCount > maxRetries) {
-                toast.error(`Failed to convert MP4 segment ${i+1}: ${segmentError instanceof Error ? segmentError.message : 'Unknown error'}`);
+                toast.error(t('failedConvertMp4Segment').replace('{index}', String(i + 1)).replace('{message}', segmentError instanceof Error ? segmentError.message : 'Unknown error'));
                 break;
               }
               
@@ -545,7 +550,7 @@ export const convertVideoToGif = async (
         const segmentUrls: string[] = [];
         const segmentDuration = videoDuration / settings.segments;
         
-        toast.info(`Creating ${settings.segments} equal segments from MP4...`);
+        toast.info(t('creatingEqualSegments').replace('{count}', String(settings.segments)));
         
         // ВАЖНО: Обрабатываем равные сегменты строго по очереди
         for (let i = 0; i < settings.segments; i++) {
@@ -553,7 +558,7 @@ export const convertVideoToGif = async (
           const outputFilename = `segment_${i}.gif`;
           
           // Update progress
-          toast.info(`Processing MP4 segment ${i+1} of ${settings.segments}...`, {
+          toast.info(t('processingMp4Segment').replace('{current}', String(i + 1)).replace('{total}', String(settings.segments)), {
             id: "segment-progress"
           });
           
@@ -600,7 +605,7 @@ export const convertVideoToGif = async (
             }
           } catch (segmentError) {
             console.error(`Error processing equal MP4 segment ${i+1}:`, segmentError);
-            toast.error(`Failed to convert equal MP4 segment ${i+1}: ${segmentError instanceof Error ? segmentError.message : 'Unknown error'}`);
+            toast.error(t('failedConvertEqualSegment').replace('{index}', String(i + 1)).replace('{message}', segmentError instanceof Error ? segmentError.message : 'Unknown error'));
           }
         }
         
@@ -615,7 +620,7 @@ export const convertVideoToGif = async (
       } else {
         // Single segment conversion
         console.log(`Running single segment conversion from MP4 file: ${mp4FileName}...`);
-        toast.info("Creating GIF from MP4...");
+        toast.info(t('creatingGifFromMp4'));
         
         // Improved command with more stable parameters and explicit format using MP4
         const singleGifCommand = [
@@ -648,12 +653,12 @@ export const convertVideoToGif = async (
       }
     } catch (error) {
       console.error("Error during MP4 processing:", error);
-      toast.error(`MP4 conversion failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(t('mp4ConversionFailedToast').replace('{message}', error instanceof Error ? error.message : 'Unknown error'));
       return null;
     }
   } catch (importError) {
     console.error("Error importing FFmpeg:", importError);
-    toast.error("Failed to load FFmpeg. Please try again or check your internet connection.");
+    toast.error(t('failedToLoadFfmpegRetry'));
     return null;
   }
 };

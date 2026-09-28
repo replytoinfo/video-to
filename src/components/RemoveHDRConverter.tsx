@@ -221,7 +221,7 @@ const RemoveHDRConverter = () => {
         setCurrentProcessingFile('');
         
         if (results.length > 0) {
-            toast.success(`${t('hdrSuccessfullyProcessed')} ${results.length} ${t('hdrOf')} ${selectedVideos.length}`);
+            toast.success(`${t('hdrSuccessfullyProcessed')} ${results.length} ${t('hdrOf')} ${selectedVideos.length} ${t('hdrVideosWord')}`);
         } else {
             toast.error(t('hdrFailedToProcessAny'));
         }

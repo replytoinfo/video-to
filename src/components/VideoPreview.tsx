@@ -3,12 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface VideoPreviewProps {
   videoFile: File | null;
 }
 
 const VideoPreview = ({ videoFile }: VideoPreviewProps) => {
+  const { t } = useLanguage();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -75,7 +77,7 @@ const VideoPreview = ({ videoFile }: VideoPreviewProps) => {
   if (!videoUrl) {
     return (
       <div className="w-full aspect-video bg-secondary/50 rounded-lg flex items-center justify-center">
-        <p className="text-muted-foreground">Upload a video to preview</p>
+        <p className="text-muted-foreground">{t('uploadVideoToPreview')}</p>
       </div>
     );
   }
@@ -116,7 +118,7 @@ const VideoPreview = ({ videoFile }: VideoPreviewProps) => {
               onClick={handleReset}
             >
               <RotateCcw className="h-4 w-4" />
-              <span className="sr-only">Reset</span>
+              <span className="sr-only">{t('resetWord')}</span>
             </Button>
             <Button
               variant="ghost"
@@ -133,7 +135,7 @@ const VideoPreview = ({ videoFile }: VideoPreviewProps) => {
                 <Play className="h-4 w-4" />
               )}
               <span className="sr-only">
-                {isPlaying ? "Pause" : "Play"}
+                {isPlaying ? t('pauseWord') : t('playWord')}
               </span>
             </Button>
           </div>

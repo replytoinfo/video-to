@@ -211,7 +211,7 @@ export default function VideoToJpgConverter(){
           </div>
           <div className="bottom-zip-section">
             <button onClick={downloadAllAsZip} disabled={isProcessing} className="zip-btn large">
-              {isProcessing ? `📦 ${t('creatingZip')} ${progress}%` : `📦 ${t('downloadAllAsZip')} ${extractedFrames.length}`}
+              {isProcessing ? `📦 ${t('creatingZip')} ${progress}%` : `📦 ${t('downloadAllAsZip')} (${extractedFrames.length})`}
             </button>
             {isProcessing && <ProgressBar value={progress}/>}
           </div>

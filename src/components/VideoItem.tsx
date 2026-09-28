@@ -55,33 +55,33 @@ const VideoItem = React.memo(({ videoFile, index, onRemove }: VideoItemProps) =>
 
   const handleConvert = async () => {
     if (!isFFmpegLoaded || !ffmpeg) {
-      toast.error("FFmpeg is not loaded yet. Please wait or try reloading FFmpeg.");
+      toast.error(t('ffmpegNotLoadedYet'));
       return null;
     }
-    
+
     try {
       setIsConverting(true);
-      
+
       // Sequential processing for single video
-      toast.info(`Processing ${videoFile.name}...`);
-      
-      const gifUrls = await convertVideoToGif(videoFile, settings, ffmpeg);
+      toast.info(t('processingFileToast').replace('{name}', videoFile.name));
+
+      const gifUrls = await convertVideoToGif(videoFile, settings, ffmpeg, undefined, t);
       setIsConverting(false);
-      
+
       if (gifUrls && gifUrls.length > 0) {
         setConvertedGifUrls(gifUrls);
-        toast.success(`Successfully converted to ${gifUrls.length} GIF(s)`);
-        
+        toast.success(t('successfullyConvertedGifs').replace('{count}', String(gifUrls.length)));
+
         // Calculate sizes of GIFs
         calculateGifSizes(gifUrls);
         return gifUrls;
       } else {
-        toast.error("Failed to convert video to GIF");
+        toast.error(t('failedToConvertGif'));
         return null;
       }
     } catch (error) {
       console.error("Conversion error:", error);
-      toast.error("Failed to convert video to GIF");
+      toast.error(t('failedToConvertGif'));
       setIsConverting(false);
       return null;
     }
