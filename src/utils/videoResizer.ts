@@ -1,5 +1,8 @@
 import { toast } from "sonner";
 
+type Translate = (key: string) => string;
+const identityT: Translate = (key) => key;
+
 // Helper function to get video dimensions
 export const getVideoDimensions = async (
   videoFile: File
@@ -83,7 +86,8 @@ export const resizeVideo = async (
 export const processVideoWithResizing = async (
   videoFile: File,
   ffmpegInstance: any,
-  onProgress?: (step: string, progress: number) => void
+  onProgress?: (step: string, progress: number) => void,
+  t: Translate = identityT
 ): Promise<{
   fileName: string;
   needsResize: boolean;
@@ -100,7 +104,7 @@ export const processVideoWithResizing = async (
     console.log(`📐 Original video dimensions: ${videoDimensions.width}x${videoDimensions.height}`);
   } catch (error) {
     console.error('❌ Failed to get video dimensions:', error);
-    toast.error("Не удалось получить информацию о видео");
+    toast.error(t('failedToGetVideoInfo'));
     throw error;
   }
   
@@ -112,7 +116,7 @@ export const processVideoWithResizing = async (
   console.log(`🔄 Resize needed: ${shouldResize ? 'YES' : 'NO'}`);
   
   if (shouldResize) {
-    toast.info(`Изменение размера видео: ${videoDimensions.width}x${videoDimensions.height} → ${targetRes.width}x${targetRes.height}`);
+    toast.info(t('resizingVideoToast').replace('{from}', `${videoDimensions.width}x${videoDimensions.height}`).replace('{to}', `${targetRes.width}x${targetRes.height}`));
   }
 
   const fileExtension = videoFile.name.split('.').pop()?.toLowerCase() || '';
@@ -156,12 +160,12 @@ export const processVideoWithResizing = async (
       // Update file size info
       const resizedData = ffmpegInstance.FS('readFile', resizedFileName);
       console.log(`📊 Resized file size: ${(resizedData.length / (1024 * 1024)).toFixed(2)} MB`);
-      toast.success(`Видео изменено до ${targetRes.width}x${targetRes.height}. Размер уменьшен до ${(resizedData.length / (1024 * 1024)).toFixed(1)} MB`);
-      
+      toast.success(t('videoResizedToSize').replace('{resolution}', `${targetRes.width}x${targetRes.height}`).replace('{size}', (resizedData.length / (1024 * 1024)).toFixed(1)));
+
       onProgress?.('Video resized successfully', 80);
     } catch (resizeError: any) {
       console.error('❌ Video resize failed:', resizeError);
-      toast.error("Не удалось изменить размер видео");
+      toast.error(t('failedToResizeVideo'));
       throw resizeError;
     }
   }

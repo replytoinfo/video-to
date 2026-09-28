@@ -151,7 +151,7 @@ const SequentialConversion = ({ videoFiles }: SequentialConversionProps) => {
     setIsCreatingZip(true);
     
     try {
-      await downloadAsZip(convertedUrls, setIsCreatingZip);
+      await downloadAsZip(convertedUrls, setIsCreatingZip, undefined, undefined, t);
     } catch (error) {
       console.error("Error downloading as ZIP:", error);
       toast.error(t("downloadError"));

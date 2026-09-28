@@ -312,7 +312,7 @@ const VideoCutter = () => {
 		}
 
 		const urls = processedSegments.map(seg => seg.url);
-		await downloadAsZip(urls, setIsCreatingZip, "mp4", "video-segment");
+		await downloadAsZip(urls, setIsCreatingZip, "mp4", "video-segment", t);
 	};
 
 	const handleDownloadSingle = (segment: ProcessedSegment) => {

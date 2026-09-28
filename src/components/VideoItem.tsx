@@ -130,17 +130,17 @@ const VideoItem = React.memo(({ videoFile, index, onRemove }: VideoItemProps) =>
   };
 
   const handleDownloadGif = (url: string, index: number) => {
-    downloadSingleGif(url, index);
+    downloadSingleGif(url, index, t);
   };
 
   const handleDownloadAllGifs = () => {
     if (!convertedGifUrls) return;
-    downloadAsZip(convertedGifUrls, setIsCreatingZip);
+    downloadAsZip(convertedGifUrls, setIsCreatingZip, undefined, undefined, t);
   };
 
   const handleDownloadAsZip = async () => {
     if (!convertedGifUrls) return;
-    await downloadAsZip(convertedGifUrls, setIsCreatingZip);
+    await downloadAsZip(convertedGifUrls, setIsCreatingZip, undefined, undefined, t);
   };
 
   return (

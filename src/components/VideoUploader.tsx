@@ -38,25 +38,25 @@ const VideoUploader = ({ onVideoSelected, multiple = false }: VideoUploaderProps
     const videoFiles = files.filter(file => file.type.startsWith("video/"));
 
     if (videoFiles.length === 0) {
-      toast.error("Please select valid video file(s)");
+      toast.error(t("pleaseSelectValidVideoFiles"));
       return;
     }
 
     if (videoFiles.length < files.length) {
-      toast.warning(`${files.length - videoFiles.length} non-video files were ignored`);
+      toast.warning(t("nonVideoFilesIgnored").replace("{count}", String(files.length - videoFiles.length)));
     }
 
     const largeFiles = videoFiles.filter(file => file.size > 500 * 1024 * 1024);
     if (largeFiles.length > 0) {
-      toast.info("Processing large files. Auto-resize will be applied for speed.");
+      toast.info(t("processingLargeFilesAutoResize"));
     }
 
     onVideoSelected(videoFiles);
 
     if (videoFiles.length === 1) {
-      toast.success("Video uploaded successfully");
+      toast.success(t("videoUploadedSuccessSingular"));
     } else {
-      toast.success(`${videoFiles.length} videos uploaded successfully`);
+      toast.success(t("videoUploadedSuccessPlural").replace("{count}", String(videoFiles.length)));
     }
 
     if (inputRef.current) {
@@ -85,7 +85,7 @@ const VideoUploader = ({ onVideoSelected, multiple = false }: VideoUploaderProps
         onChange={handleFileChange}
         accept="video/*"
         multiple={multiple}
-        aria-label={multiple ? "Select multiple video files" : "Select a video file"}
+        aria-label={multiple ? t("selectMultipleVideoFilesAria") : t("selectVideoFileAria")}
       />
 
       <div
@@ -101,7 +101,7 @@ const VideoUploader = ({ onVideoSelected, multiple = false }: VideoUploaderProps
         onClick={handleBrowseClick}
         role="button"
         tabIndex={0}
-        aria-label="Drag and drop video files here or click to browse"
+        aria-label={t("dragDropVideoFilesAria")}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
@@ -138,7 +138,7 @@ const VideoUploader = ({ onVideoSelected, multiple = false }: VideoUploaderProps
             }}
             className="mt-2"
             variant="outline"
-            aria-label={multiple ? "Browse for multiple video files" : "Browse for video file"}
+            aria-label={multiple ? t("browseMultipleVideoFilesAria") : t("browseVideoFileAria")}
           >
             {t("browseFiles")}
           </Button>

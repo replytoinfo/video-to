@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-28 — i18n: toast notifications + UI polish, 404 dark theme
+
+### i18n
+- Translated all remaining hardcoded toast notifications (en/ru/uk): upload, conversion, download, ZIP creation, FFmpeg loading/errors — `ConversionButton.tsx`, `VideoItem.tsx`, `VideoUploader.tsx`, `video/GifPreview.tsx`, `video/SequentialConversion.tsx`, `video/VideoCutter.tsx`, `contexts/FFmpegContext.tsx`, `utils/downloadUtils.ts`, `utils/videoResizer.ts`
+- `downloadUtils.ts` functions now take an optional `t: Translate` param (defaults to identity) threaded through `downloadSingleGif` → `downloadAllGifs` → `createDownloadDialog` / `downloadAsZip`; `FFmpegContext.tsx` reads `t` via a ref so language changes don't retrigger the FFmpeg load effect
+- Translated CUT tab, Browse buttons, aria-labels, pluralization, unified uk terminology (`3ce6251`)
+- Fixed filename overlapping the toolbar, ZIP buttons now full-width on mobile, 404 page dark theme (`2d06713`)
+
 ## 2026-09-28 — FFmpeg: load local core instead of always CDN
 
 ### Fix

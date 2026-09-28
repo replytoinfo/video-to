@@ -41,18 +41,18 @@ const GifPreview = ({
   const isLarge = fileSize > 100 * 1024 * 1024; // 100MB
   
   const handleDownloadSingle = (url: string, idx: number) => {
-    downloadSingleGif(url, idx);
+    downloadSingleGif(url, idx, t);
   };
 
   const handleDownloadAll = () => {
     if (gifUrls && gifUrls.length > 0) {
-      downloadAsZip(gifUrls, setIsCreatingZip);
+      downloadAsZip(gifUrls, setIsCreatingZip, undefined, undefined, t);
     }
   };
 
   const handleDownloadZip = () => {
     if (gifUrls && gifUrls.length > 0) {
-      downloadAsZip(gifUrls, setIsCreatingZip);
+      downloadAsZip(gifUrls, setIsCreatingZip, undefined, undefined, t);
     }
   };
   

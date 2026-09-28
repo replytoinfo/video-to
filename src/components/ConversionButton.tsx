@@ -19,25 +19,27 @@ const ConversionButton = ({ onConvert, disabled }: ConversionButtonProps) => {
 
   const handleConvert = async () => {
     if (!isFFmpegLoaded) {
-      toast.error("FFmpeg is not loaded yet. Please wait or refresh the page.");
+      toast.error(t("ffmpegNotLoadedYet"));
       return;
     }
-    
+
     try {
       setConverting(true);
       const urls = await onConvert();
-      
+
       if (urls && urls.length > 0) {
         setIsConverted(true);
-        toast.success(`Conversion complete! Created ${urls.length} GIF file${urls.length > 1 ? 's' : ''}`);
+        toast.success(
+          t(urls.length > 1 ? "gifConversionCompletePlural" : "gifConversionCompleteSingular").replace("{count}", String(urls.length))
+        );
       } else {
-        toast.error("Conversion failed. Please try again.");
+        toast.error(t("conversionFailedRetry"));
       }
-      
+
       setConverting(false);
     } catch (error) {
       console.error("Conversion error:", error);
-      toast.error(`Failed to convert video: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(t("failedToConvertVideoWithMessage").replace("{message}", error instanceof Error ? error.message : 'Unknown error'));
       setConverting(false);
     }
   };

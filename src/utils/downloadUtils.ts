@@ -2,6 +2,9 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { toast } from "sonner";
 
+type Translate = (key: string) => string;
+const identityT: Translate = (key) => key;
+
 /**
  * Generates a random filename with specified extension
  * @param extension File extension (without dot)
@@ -45,13 +48,13 @@ export const downloadFile = (url: string, fileName: string): void => {
   }
 };
 
-export const downloadSingleGif = (url: string, segmentIndex: number): void => {
+export const downloadSingleGif = (url: string, segmentIndex: number, t: Translate = identityT): void => {
   const link = document.createElement("a");
   link.href = url;
   link.download = generateRandomFileName("gif", `segment-${segmentIndex+1}-`);
   document.body.appendChild(link);
   link.click();
-  
+
   // Safe DOM element removal
   try {
     if (link.parentNode) {
@@ -60,31 +63,33 @@ export const downloadSingleGif = (url: string, segmentIndex: number): void => {
   } catch (error) {
     console.warn('Failed to remove download link from DOM:', error);
   }
-  
-  toast.success(`Downloading segment ${segmentIndex + 1}`);
+
+  toast.success(t('downloadingSegmentToast').replace('{index}', String(segmentIndex + 1)));
 };
 
 export const downloadAllGifs = (
   urls: string[],
-  setIsDownloading: (value: boolean) => void
+  setIsDownloading: (value: boolean) => void,
+  t: Translate = identityT
 ): void => {
   if (urls.length === 0) {
-    toast.error("No GIFs available to download");
+    toast.error(t('noGifsToDownload'));
     return;
   }
 
   if (urls.length === 1) {
-    downloadSingleGif(urls[0], 0);
+    downloadSingleGif(urls[0], 0, t);
     return;
   }
 
   // For multiple files, create a download dialog
-  createDownloadDialog(urls, setIsDownloading);
+  createDownloadDialog(urls, setIsDownloading, t);
 };
 
 export const createDownloadDialog = (
   urls: string[],
-  setIsDownloading: (value: boolean) => void
+  setIsDownloading: (value: boolean) => void,
+  t: Translate = identityT
 ): void => {
   const container = document.createElement("div");
   container.style.position = "fixed";
@@ -103,14 +108,14 @@ export const createDownloadDialog = (
   container.style.flexDirection = "column";
   
   const title = document.createElement("h3");
-  title.textContent = `Download ${urls.length} GIF Files`;
+  title.textContent = t('downloadDialogTitle').replace('{count}', String(urls.length));
   title.style.marginBottom = "15px";
   title.style.borderBottom = "1px solid #eee";
   title.style.paddingBottom = "10px";
   container.appendChild(title);
-  
+
   const closeButton = document.createElement("button");
-  closeButton.textContent = "Close";
+  closeButton.textContent = t('closeWord');
   closeButton.style.position = "absolute";
   closeButton.style.top = "10px";
   closeButton.style.right = "10px";
@@ -133,7 +138,7 @@ export const createDownloadDialog = (
   container.appendChild(closeButton);
   
   const description = document.createElement("p");
-  description.textContent = "Due to browser limitations, please click on each link to download the individual GIF file:";
+  description.textContent = t('downloadDialogDescription');
   description.style.marginBottom = "15px";
   container.appendChild(description);
   
@@ -152,7 +157,7 @@ export const createDownloadDialog = (
     const link = document.createElement("a");
     link.href = url;
     link.download = generateRandomFileName("gif", `segment-${idx+1}-`);
-    link.textContent = `Segment ${idx+1}`;
+    link.textContent = t('segmentLabel').replace('{index}', String(idx + 1));
     link.style.color = "#0066cc";
     link.style.textDecoration = "none";
     link.style.display = "block";
@@ -166,9 +171,9 @@ export const createDownloadDialog = (
   document.body.appendChild(container);
   
   toast.success(
-    `Prepared ${urls.length} GIFs for download`,
+    t('preparedGifsForDownload').replace('{count}', String(urls.length)),
     {
-      description: "A dialog with download links has been opened. Click each link to download.",
+      description: t('downloadDialogOpenedDescription'),
       duration: 10000
     }
   );
@@ -178,25 +183,26 @@ export const downloadAsZip = async (
   urls: string[],
   setIsCreatingZip: (value: boolean) => void,
   fileExtension: string = "gif",
-  filePrefix: string = "segment"
+  filePrefix: string = "segment",
+  t: Translate = identityT
 ): Promise<void> => {
   if (urls.length === 0) {
-    toast.error(`No files available to download`);
+    toast.error(t('noFilesAvailableToDownload'));
     return;
   }
 
   // Limit for ZIP creation to prevent memory issues
   const MAX_ZIP_FILES = 500;
   const MAX_ESTIMATED_SIZE_MB = 20480; // 20GB limit for ZIP creation
-  
+
   if (urls.length > MAX_ZIP_FILES) {
-    toast.error(`Too many files for ZIP creation (${urls.length}). Maximum: ${MAX_ZIP_FILES}. Using individual download instead.`);
-    downloadAllGifs(urls, setIsCreatingZip);
+    toast.error(t('tooManyFilesForZip').replace('{count}', String(urls.length)).replace('{max}', String(MAX_ZIP_FILES)));
+    downloadAllGifs(urls, setIsCreatingZip, t);
     return;
   }
 
   setIsCreatingZip(true);
-  toast.info(`Creating ZIP archive with ${urls.length} files...`);
+  toast.info(t('creatingZipArchiveWithFiles').replace('{count}', String(urls.length)));
 
   try {
     const zip = new JSZip();
@@ -206,7 +212,7 @@ export const downloadAsZip = async (
     for (let idx = 0; idx < urls.length; idx++) {
       const url = urls[idx];
       try {
-        toast.info(`Processing file ${idx + 1} of ${urls.length} for ZIP...`, { id: "zip-progress" });
+        toast.info(t('processingFileForZip').replace('{current}', String(idx + 1)).replace('{total}', String(urls.length)), { id: "zip-progress" });
 
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Failed to fetch file data: ${response.statusText}`);
@@ -216,8 +222,8 @@ export const downloadAsZip = async (
 
         // Check if estimated size exceeds limit
         if (totalSizeEstimate > MAX_ESTIMATED_SIZE_MB * 1024 * 1024) {
-          toast.error(`ZIP archive too large (>${MAX_ESTIMATED_SIZE_MB}MB). Using individual download instead.`);
-          downloadAllGifs(urls, setIsCreatingZip);
+          toast.error(t('zipArchiveTooLarge').replace('{max}', String(MAX_ESTIMATED_SIZE_MB)));
+          downloadAllGifs(urls, setIsCreatingZip, t);
           return;
         }
 
@@ -230,11 +236,11 @@ export const downloadAsZip = async (
 
       } catch (error) {
         console.error(`Error processing file ${idx+1}:`, error);
-        toast.error(`Failed to process file ${idx+1}. Skipping...`);
+        toast.error(t('failedToProcessFileSkipping').replace('{index}', String(idx + 1)));
       }
     }
 
-    toast.info("Generating ZIP archive...", { id: "zip-progress" });
+    toast.info(t('generatingZipArchive'), { id: "zip-progress" });
 
     // Generate ZIP with compression to reduce size
     const zipBlob = await zip.generateAsync({
@@ -245,11 +251,11 @@ export const downloadAsZip = async (
 
     saveAs(zipBlob, generateRandomFileName("zip", `${filePrefix}s-`));
 
-    toast.success(`ZIP archive with ${urls.length} files created successfully (${(zipBlob.size / 1024 / 1024).toFixed(1)}MB)`);
+    toast.success(t('zipArchiveCreatedSuccess').replace('{count}', String(urls.length)).replace('{size}', (zipBlob.size / 1024 / 1024).toFixed(1)));
 
   } catch (error) {
     console.error("Error creating ZIP file:", error);
-    
+
     // Check if it's a memory-related error
     if (error instanceof Error && (
       error.message.includes("Array buffer allocation failed") ||
@@ -257,10 +263,10 @@ export const downloadAsZip = async (
       error.message.includes("Maximum call stack") ||
       error.name === "RangeError"
     )) {
-      toast.error("ZIP creation failed due to memory constraints. Using individual download instead.");
-      downloadAllGifs(urls, setIsCreatingZip);
+      toast.error(t('zipCreationFailedMemory'));
+      downloadAllGifs(urls, setIsCreatingZip, t);
     } else {
-      toast.error("Failed to create ZIP archive");
+      toast.error(t('failedToCreateZipArchive'));
     }
   } finally {
     setIsCreatingZip(false);

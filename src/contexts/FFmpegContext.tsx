@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
 import { createFFmpegInstance } from '../utils/ffmpegUtils';
+import { useLanguage } from './LanguageContext';
 
 interface FFmpegContextType {
   ffmpeg: any;
@@ -30,6 +31,13 @@ let ffmpegInstanceCache: any = null;
 let ffmpegLoadingPromise: Promise<any> | null = null;
 
 export const FFmpegProvider: React.FC<FFmpegProviderProps> = ({ children }) => {
+  const { t } = useLanguage();
+  // Читаем t через ref, чтобы смена языка не пересоздавала loadFFmpeg
+  // (иначе useEffect с deps [loadFFmpeg] перезапускал бы загрузку FFmpeg).
+  const tRef = useRef(t);
+  useEffect(() => {
+    tRef.current = t;
+  }, [t]);
   const [ffmpeg, setFfmpeg] = useState<any>(null);
   const [isFFmpegLoaded, setIsFFmpegLoaded] = useState(false);
   const [isFFmpegLoading, setIsFFmpegLoading] = useState(false);
@@ -75,40 +83,40 @@ export const FFmpegProvider: React.FC<FFmpegProviderProps> = ({ children }) => {
       // Показываем успешное уведомление только для Safari пользователей
       const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
       if (isSafari) {
-        toast.success('FFmpeg loaded successfully! Safari compatibility mode active.');
+        toast.success(tRef.current('ffmpegLoadedSafariMode'));
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       console.error('❌ FFmpeg loading failed:', errorMessage, error);
-      
+
       // Обработка различных типов ошибок
       if (errorMessage.includes('Safari compatibility issue')) {
         // Это наше специальное сообщение для Safari
         setFfmpegLoadingError(errorMessage);
-        toast.error('Safari compatibility issue detected. We recommend using Chrome or Firefox for video processing.', {
+        toast.error(tRef.current('safariCompatibilityRecommendChrome'), {
           duration: 10000,
           action: {
-            label: 'Learn More',
+            label: tRef.current('learnMoreAction'),
             onClick: () => console.log('Show Safari compatibility info')
           }
         });
       } else if (errorMessage.includes('blob') || errorMessage.includes('webkit') || errorMessage.includes('resource')) {
         // Устаревшая blob ошибка (не должна появляться с новой логикой)
         console.warn('🍎 Legacy WebKit blob resource error detected');
-        setFfmpegLoadingError('WebKit blob resource issue. This is a known Safari limitation. Please try using Chrome or Firefox for the best experience.');
-        toast.error('Safari compatibility issue detected. We recommend using Chrome or Firefox for video processing.');
+        setFfmpegLoadingError(tRef.current('webkitBlobResourceIssue'));
+        toast.error(tRef.current('safariCompatibilityRecommendChrome'));
       } else if (errorMessage.includes('Safari') && errorMessage.includes('too old')) {
         setFfmpegLoadingError(errorMessage);
-        toast.error('Please update Safari to version 14+ or use Chrome/Firefox.');
+        toast.error(tRef.current('updateSafariVersionMessage'));
       } else if (errorMessage.includes('SharedArrayBuffer')) {
-        setFfmpegLoadingError('SharedArrayBuffer not supported. Please enable cross-origin isolation or use a different browser.');
-        toast.error('Browser compatibility issue. Please try Chrome or Firefox.');
+        setFfmpegLoadingError(tRef.current('sharedArrayBufferNotSupportedShort'));
+        toast.error(tRef.current('browserCompatibilityIssueRetry'));
       } else if (errorMessage.includes('FFmpeg loading timeout')) {
-        setFfmpegLoadingError('FFmpeg loading timeout. This may be due to slow internet connection or browser limitations.');
-        toast.error('Loading timeout. Please check your internet connection and try again.');
+        setFfmpegLoadingError(tRef.current('ffmpegLoadingTimeoutDetailed'));
+        toast.error(tRef.current('ffmpegLoadingTimeoutCheckConnection'));
       } else {
         setFfmpegLoadingError(errorMessage);
-        toast.error('FFmpeg loading failed. Please try refreshing the page.');
+        toast.error(tRef.current('ffmpegLoadingFailedRefreshPage'));
       }
     } finally {
       setIsFFmpegLoading(false);
@@ -120,7 +128,7 @@ export const FFmpegProvider: React.FC<FFmpegProviderProps> = ({ children }) => {
   useEffect(() => {
     // Проверяем поддержку SharedArrayBuffer
     if (typeof SharedArrayBuffer === 'undefined') {
-      setFfmpegLoadingError('SharedArrayBuffer is not supported in this browser. Please use a modern browser with cross-origin isolation enabled.');
+      setFfmpegLoadingError(tRef.current('sharedArrayBufferNotSupportedFull'));
       return;
     }
 
